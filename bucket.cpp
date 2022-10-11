@@ -1,34 +1,39 @@
 #include <iostream>
 #include <cstring>
 #define BUCKET_SIZE 1024
-#define KEY_SIZE 16
-#define VALUE_SIZE 16
+#define KEY_SIZE 8
+#define VALUE_SIZE 8
 using namespace std;
 
 class Bucket
 {
     private:
-        char array[BUCKET_SIZE];
         int8_t local_depth;
-        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)];
-        //32칸 첫째칸(32B) : 1B:depth 32bit(4B):bitmap 나머지는? 너무 낭비다.
-        //
+        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];
+        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)];
     public:
         bool insert(char* key,char* value);
         void update(char* key,char* value);
         void remove(char* key);
         char* lookup(char* key);
         void initialize();
+        int getSize();
 };
-
+void Bucket::initialize(){
+    for(int i=0;i<getSize();i++){
+        bitmap[i]=false;
+    }
+}
+int Bucket::getSize(){
+    return sizeof(array)/(KEY_SIZE+VALUE_SIZE);
+}
 bool Bucket::insert(char* key,char* value){
     //중복확인을 해야하네?
-    for(int i=1;i<32;i++){
+    for(int i=0;i<getSize();i++){
         if(bitmap[i]==false){
             //startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
             strncpy(array+i*(KEY_SIZE+VALUE_SIZE),key,KEY_SIZE);
             strncpy(array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,value,VALUE_SIZE);
-            //printf("key:%s\n",array+i*(KEY_SIZE+VALUE_SIZE));
             bitmap[i]=true;
             return true;
         }
@@ -37,7 +42,7 @@ bool Bucket::insert(char* key,char* value){
 }
 char* Bucket::lookup(char* key){
     char* rtnvalue=(char*)malloc(VALUE_SIZE);
-    for(int i=1;i<32;i++){
+    for(int i=0;i<getSize();i++){
         if(bitmap[i]==true){
             //startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
             if(strncmp(array+i*(KEY_SIZE+VALUE_SIZE),key,KEY_SIZE)==0){
@@ -51,16 +56,28 @@ char* Bucket::lookup(char* key){
 
 int main(){
     Bucket bucket;
-    char inkey[16];
-    for(int i=0;i<KEY_SIZE;i++){
-        inkey[i]='a'+i;
+    bucket.initialize();
+    int bucketsize=bucket.getSize();
+    char inkey[KEY_SIZE];
+    char invalue[VALUE_SIZE];
+    //printf("%d",sizeof(bucket.array));
+    for(int j=0;j<bucketsize;j++){
+        for(int i=0;i<KEY_SIZE;i++){
+            inkey[i]='z'-j;
+        }
+        for(int i=0;i<VALUE_SIZE;i++){
+            invalue[i]='z'-j;
+        }
+        bucket.insert(inkey,invalue);
     }
-    char invalue[16];
-    for(int i=0;i<KEY_SIZE;i++){
-        invalue[i]='a'+i;
+    printf("start\n");
+    for(int j=0;j<bucketsize;j++){
+        for(int i=0;i<KEY_SIZE;i++){
+            inkey[i]='z'-j;
+        }
+        char* output;
+        output=bucket.lookup(inkey);
+        printf("%d:",j);
+        printf("%s\n",output);
     }
-    bucket.insert(inkey,invalue);
-    char* output;
-    output=bucket.lookup(inkey);
-    printf("%s\n",output);
 }
