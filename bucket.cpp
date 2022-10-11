@@ -14,7 +14,7 @@ class Bucket
     public:
         bool insert(char* key,char* value);
         void update(char* key,char* value);
-        void remove(char* key);
+        bool remove(char* key);
         char* lookup(char* key);
         void initialize();
         int getSize();
@@ -53,7 +53,21 @@ char* Bucket::lookup(char* key){
     }
     return NULL;
 }
-
+bool Bucket::remove(char* key){
+    char* erasekey=(char*)malloc(KEY_SIZE);
+    char* erasevalue=(char*)malloc(VALUE_SIZE);
+    for(int i=0;i<getSize();i++){
+        if(bitmap[i]==true){
+            //startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
+            if(strncmp(array+i*(KEY_SIZE+VALUE_SIZE),key,KEY_SIZE)==0){
+                strncpy(array+i*(KEY_SIZE+VALUE_SIZE),erasekey,KEY_SIZE);
+                strncpy(array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,erasevalue,VALUE_SIZE);
+                return true;
+            }
+        }
+    }
+    return false;
+}
 int main(){
     Bucket bucket;
     bucket.initialize();
@@ -80,4 +94,10 @@ int main(){
         printf("%d:",j);
         printf("%s\n",output);
     }
+    for(int i=0;i<KEY_SIZE;i++){
+            inkey[i]='z'-3;
+    }
+    bucket.remove(inkey);
+    char* output=bucket.lookup(inkey);
+    printf("%s\n",output);
 }
