@@ -7,6 +7,7 @@ using namespace std;
 class hashtable{
     private:
         int16_t global_depth;
+        
     public :
         void insert();
         void remove();
