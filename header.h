@@ -36,11 +36,12 @@ class hashtable{
     private:
     //TABLE_SIZE/BUCKET_SIZE
         int8_t global_depth;
+        int8_t table_size;
         //char* cache[CACHE_SIZE]
         //Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)-sizeof(cache)];//1024
-        Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)];//1024
+        Bucket** table;
     public:
-
+        hashtable(int8_t size);
         int insertKV(char* key, char* value);
         void doubleTable();
         void removeKV(char* key);
@@ -48,7 +49,6 @@ class hashtable{
         char* searchKV(char* key);
         int getSizeTable();
         int hashingKey(char *key);
-        Bucket* split(Bucket* splitBucket);
     
 };
 
