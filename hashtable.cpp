@@ -1,15 +1,11 @@
-#include <iostream>
-#include <cstring>
-#define TABLE_SIZE 1024*1024
+#include "header.h"
 
-using namespace std;
-
-class hashtable{
-    private:
-        int16_t global_depth;
+int hashtable::getSize(){
+    return sizeof(table);
+}
+void hashtable::initialize(){
+    global_depth=1;
+    for(int i=0;i<getSize();i++){
         
-    public :
-        void insert();
-        void remove();
-        void search(char* key, char* value);
-};
+    }
+}
