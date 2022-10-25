@@ -1,8 +1,9 @@
 #include "header.h"
 
 hashtable::hashtable(int8_t size){
-    table=new Bucket*[size];
-    table_size=size;
+    //size=2^globaldepth;
+    global_depth=size;
+    table=new Bucket*[pow(2,global_depth)];
     initialize();
 }
 int hashtable::getSizeTable(){
@@ -14,9 +15,10 @@ void hashtable::initialize(){
 int hashtable::hashingKey(char* key){
     //간단한 hash func
     unsigned long i = 0;
-    for (int j=0; key[j]; j++)
+    for (int j=0; key[j]; j++){
         i += key[j];
-    return i % getSizeTable();
+    }
+    return i % (long)(pow(2,global_depth));
     return;
 }
 
@@ -33,7 +35,8 @@ int hashtable::insertKV(char* key,char* value ){
             Bucket* newBucket=table[index]->split(key);
         }else{
             doubleTable();
-            index=hashingKey(key);//doubling으로 key값이 바뀜
+            //doubling으로 table_size가 변했으니 hashingkey도 다시! 
+            index=hashingKey(key);
             //다시 insert
             table[index]->insert(key,value);
             return rtnBucket;
@@ -51,6 +54,10 @@ char* hashtable::searchKV(char* key){
     return NULL;
 }
 void hashtable::doubleTable(){
-
+    Bucket** temptable=new Bucket*[pow(2,global_depth+1)];
+    //되는지 확인 필요
+    memcpy(temptable,table,pow(2,global_depth));
+    table=temptable;
+    global_depth++;
 }
 

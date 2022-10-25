@@ -36,7 +36,6 @@ class hashtable{
     private:
     //TABLE_SIZE/BUCKET_SIZE
         int8_t global_depth;
-        int8_t table_size;
         //char* cache[CACHE_SIZE]
         //Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)-sizeof(cache)];//1024
         Bucket** table;
