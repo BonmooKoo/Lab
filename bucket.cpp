@@ -1,26 +1,7 @@
-#include <iostream>
-#include <cstring>
-#define BUCKET_SIZE 1024//Byte
-#define KEY_SIZE 8      //Byte
-#define VALUE_SIZE 8    //Byte
-using namespace std;
+#include "header.h"
 
-class Bucket
-{
-    private:
-        //64
-        int8_t local_depth;//1
-        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];//63
-        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
-    public:
-        int insert(char* key,char* value);
-        void update(char* key,char* value);
-        bool remove(char* key);
-        char* lookup(char* key);
-        void initialize();
-        int getSize();
-};
 void Bucket::initialize(){
+    local_depth=1;
     for(int i=0;i<getSize();i++){
         bitmap[i]=false;
     }
@@ -77,6 +58,7 @@ bool Bucket::remove(char* key){
     }
     return false;
 }
+
 int main(){
     Bucket bucket;
     bucket.initialize();
@@ -106,10 +88,12 @@ int main(){
     for(int i=0;i<KEY_SIZE;i++){
             inkey[i]='@';
     }
+    
     char* output=bucket.lookup(inkey);
     printf("%s\n",output);
     bucket.remove(inkey);
 
     char* output1=bucket.lookup(inkey);
     printf("%s\n",output1);
+
 }
