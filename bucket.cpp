@@ -1,5 +1,7 @@
 #include "header.h"
-
+Bucket::Bucket(){
+    initialize();
+}
 void Bucket::initialize(){
     local_depth=1;
     for(int i=0;i<getSize();i++){
@@ -14,7 +16,7 @@ int Bucket::insert(char* key,char* value){
     for(int j=0;j<getSize();j++){
         if(bitmap[j]==true){
             if(strncmp(array+j*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,value,VALUE_SIZE)==0){
-                return j;
+                return -1;
             }
         }
     }
@@ -27,7 +29,7 @@ int Bucket::insert(char* key,char* value){
             return i;
         }
     }
-    return -1;
+    
 }
 
 char* Bucket::lookup(char* key){
@@ -57,6 +59,27 @@ bool Bucket::remove(char* key){
         }
     }
     return false;
+}
+Bucket* Bucket::split(char* hashkey){
+    Bucket* newBucket=new Bucket();
+    local_depth++;
+    for(int i=0;i<getSize();i++){
+        char* key;
+        char* value;
+        strncpy(key,array+i*(KEY_SIZE+VALUE_SIZE),KEY_SIZE);
+        if(strncmp(key,hashkey,local_depth)!=0){
+            strncpy(value,array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,VALUE_SIZE);            
+            delete(key);
+            newBucket->insert(key,value);
+        }
+    }
+    return newBucket;
+}
+int8_t Bucket::getLocaldepth(){
+    return local_depth;
+}
+void Bucket::addLocaldepth(){
+    local_depth++;
 }
 
 int main(){
