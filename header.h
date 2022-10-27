@@ -3,7 +3,6 @@
 #define BUCKET_SIZE 1024//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
-#define TABLE_SIZE 1024*16
 
 using namespace std;
 
@@ -48,7 +47,7 @@ class hashtable{
         char* searchKV(char* key);
         int getSizeTable();
         int hashingKey(char *key);
-    
+        
 };
 
 #endif 
