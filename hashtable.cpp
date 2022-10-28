@@ -41,8 +41,9 @@ int hashtable::insertKV(char* key,char* value ){
         
         //2. split
         
-        // 이부분 newBucket으로 옮기는거 이걸 다시 해야함.
-        Bucket* newBucket=table[index]->split(key);
+        //index=기존 bucket의 hashtable에서의 index값
+        Bucket* newBucket=table[index]->split(index,global_depth);
+        
         //새 bucket을 table 의 index에 넣어줌 
         //ex 기존 bucket 이 4이고 (depth=2)
         //   | | / / 이면
@@ -50,7 +51,6 @@ int hashtable::insertKV(char* key,char* value ){
         //   1,3 을 split하면 
         //   1 에서 2^(depth-1)만큼 더해준 곳이 새 bucket이다.
         table[index+(int)pow(2,global_depth-1)]=newBucket;
-        
         
         //3. 
         index=hashingKey(key);

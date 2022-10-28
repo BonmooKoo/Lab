@@ -28,7 +28,7 @@ class Bucket
         char* lookup(char* key);
         void initialize();
         int getSize();
-        Bucket* split(char* hashkey);
+        Bucket* split(int hash,int global_depth);
 };
 
 class hashtable{

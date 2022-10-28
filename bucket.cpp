@@ -60,14 +60,22 @@ bool Bucket::remove(char* key){
     }
     return false;
 }
-Bucket* Bucket::split(char* hashkey){
+Bucket* Bucket::split(int hash,int global_depth){
+    //
     Bucket* newBucket=new Bucket();
     local_depth++;
     for(int i=0;i<getSize();i++){
         char* key;
         char* value;
         strncpy(key,array+i*(KEY_SIZE+VALUE_SIZE),KEY_SIZE);
-        if(strncmp(key,hashkey,local_depth)!=0){
+        //new bucket으로 가야하는 값
+        int hashingKey=0;
+        for (int j=0; key[j]; j++){
+        hashingKey += key[j];
+        }
+        hashingKey= hashingKey % (long)(pow(2,global_depth));
+        //기존버킷의 hash값과 다르다면 새로운 버킷으로 옮긴다.
+        if(hashingKey!=hash){
             strncpy(value,array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,VALUE_SIZE);            
             delete(key);
             newBucket->insert(key,value);
@@ -82,41 +90,41 @@ void Bucket::addLocaldepth(){
     local_depth++;
 }
 
-int main(){
-    Bucket bucket;
-    bucket.initialize();
-    int bucketsize=bucket.getSize();
-    char inkey[KEY_SIZE];
-    char invalue[VALUE_SIZE];
-    //printf("%d",sizeof(bucket.array));
-    for(int j=0;j<bucketsize;j++){
-        for(int i=0;i<KEY_SIZE;i++){
-            inkey[i]='z'-j;
-        }
-        for(int i=0;i<VALUE_SIZE;i++){
-            invalue[i]='z'-j;
-        }
-        bucket.insert(inkey,invalue);
-    }
-    printf("start\n");
-    for(int j=0;j<bucketsize;j++){
-        for(int i=0;i<KEY_SIZE;i++){
-            inkey[i]='z'-j;
-        }
-        char* output;
-        output=bucket.lookup(inkey);
-        printf("%d:",j);
-        printf("%s\n",output);
-    }
-    for(int i=0;i<KEY_SIZE;i++){
-            inkey[i]='@';
-    }
+// int main(){
+//     Bucket bucket;
+//     bucket.initialize();
+//     int bucketsize=bucket.getSize();
+//     char inkey[KEY_SIZE];
+//     char invalue[VALUE_SIZE];
+//     //printf("%d",sizeof(bucket.array));
+//     for(int j=0;j<bucketsize;j++){
+//         for(int i=0;i<KEY_SIZE;i++){
+//             inkey[i]='z'-j;
+//         }
+//         for(int i=0;i<VALUE_SIZE;i++){
+//             invalue[i]='z'-j;
+//         }
+//         bucket.insert(inkey,invalue);
+//     }
+//     printf("start\n");
+//     for(int j=0;j<bucketsize;j++){
+//         for(int i=0;i<KEY_SIZE;i++){
+//             inkey[i]='z'-j;
+//         }
+//         char* output;
+//         output=bucket.lookup(inkey);
+//         printf("%d:",j);
+//         printf("%s\n",output);
+//     }
+//     for(int i=0;i<KEY_SIZE;i++){
+//             inkey[i]='@';
+//     }
     
-    char* output=bucket.lookup(inkey);
-    printf("%s\n",output);
-    bucket.remove(inkey);
+//     char* output=bucket.lookup(inkey);
+//     printf("%s\n",output);
+//     bucket.remove(inkey);
 
-    char* output1=bucket.lookup(inkey);
-    printf("%s\n",output1);
+//     char* output1=bucket.lookup(inkey);
+//     printf("%s\n",output1);
 
-}
+// }
