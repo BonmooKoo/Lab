@@ -1,4 +1,5 @@
 #include "header.h"
+
 Bucket::Bucket(){
     initialize();
 }
@@ -29,7 +30,8 @@ int Bucket::insert(char* key,char* value){
             return i;
         }
     }
-    
+    printf("Bucket: insert Error");
+    return NULL;
 }
 
 char* Bucket::lookup(char* key){
@@ -127,4 +129,4 @@ void Bucket::addLocaldepth(){
 //     char* output1=bucket.lookup(inkey);
 //     printf("%s\n",output1);
 
-// }
+// }~

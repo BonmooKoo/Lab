@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <cmath>
 #define BUCKET_SIZE 1024//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte

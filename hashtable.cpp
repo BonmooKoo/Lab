@@ -4,6 +4,9 @@ hashtable::hashtable(int8_t size){
     //size=2^globaldepth;
     global_depth=size;
     table=new Bucket*[(int)pow(2,global_depth)];
+    for(int i=0;i<(int)pow(2,global_depth);i++){
+        table[i]=new Bucket();
+    }
     initialize();
 }
 int hashtable::getSizeTable(){
@@ -68,8 +71,15 @@ char* hashtable::searchKV(char* key){
     //
     int index=hashingKey(key);
     char* rtnValue;
-    rtnValue=table[index]->lookup(key);
-    return NULL;
+    char* findValue;
+    findValue=table[index]->lookup(key);
+    if(findValue==NULL){
+        printf("no key!");
+        return NULL;
+    }
+    strncpy(rtnValue,findValue,VALUE_SIZE);
+    printf("found:%s",rtnValue);
+    return rtnValue;
 }
 void hashtable::doubleTable(){
     //되는지 확인 필요
