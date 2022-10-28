@@ -3,7 +3,7 @@
 hashtable::hashtable(int8_t size){
     //size=2^globaldepth;
     global_depth=size;
-    table=new Bucket*[pow(2,global_depth)];
+    table=new Bucket*[(int)pow(2,global_depth)];
     initialize();
 }
 int hashtable::getSizeTable(){
@@ -20,20 +20,21 @@ int hashtable::hashingKey(char* key){
     }
     return i % (long)(pow(2,global_depth));
 }
-
 int hashtable::insertKV(char* key,char* value ){
     //삽입
+    cout<<"insert"<<endl;
     int index=hashingKey(key);
     int rtnBucket=0;
     if((rtnBucket=table[index]->insert(key,value))==-1){
         //중복이 있거나 삽입에 실패
+        cout<<"fail"<<endl;
         return -1;
     }else if(rtnBucket==-2){
+        cout<<"split"<<endl;
         //해당하는 bucket이 꽉참
         //1. doubling 이 필요할 경우 directory doubling
         //2. split
         //3. 다시 해당 key - value를 다시 넣어줌
-        
         //1.
         if(table[index]->getLocaldepth()==global_depth){
             doubleTable();    
@@ -59,6 +60,7 @@ int hashtable::insertKV(char* key,char* value ){
         return rtnBucket;
     }
     else{
+        cout<<"Success"<<endl;
         return rtnBucket;
     }
 }
@@ -73,7 +75,7 @@ void hashtable::doubleTable(){
     //되는지 확인 필요
 
     //임시 hash table
-    Bucket** temptable=new Bucket*[pow(2,global_depth+1)];
+    Bucket** temptable=new Bucket*[(int)pow(2,global_depth+1)];
     //기존의 table(size= sizeof(Bucket*) * 2^depth개 )
     //새로운 table로 복사
     memcpy(temptable,table,pow(2,global_depth)*sizeof(Bucket*));
@@ -87,3 +89,16 @@ void hashtable::doubleTable(){
     
 }
 
+int main(){
+    hashtable ht(4);
+    char* key=new char[KEY_SIZE];
+    char* value=new char[VALUE_SIZE];
+    for(int i=0;i<KEY_SIZE;i++){
+        key[i]=i;
+        value[i]=i;
+    }
+    ht.insertKV(key,value);
+    printf("search\n");
+    char* rtnvalue=ht.searchKV(key);
+    printf("%s\n",rtnvalue);
+}
