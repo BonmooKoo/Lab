@@ -15,12 +15,13 @@ class Bucket
     private:
         //64
         int8_t local_depth;//1
-        // int8_t version_number; //1
+        //int8_t reference_counter; //1
         bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];//63
         //bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-2];//62
         char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
     public:
         Bucket();
+        Bucket(int8_t local_depth);
         int8_t getLocaldepth();
         void addLocaldepth();
         int insert(char* key,char* value); //-1은 중복 -2는 bucketfull

@@ -1,39 +1,43 @@
 #include "header.h"
-
+#include <fstream>
+#include <string>
 hashtable::hashtable(int8_t size){
-    //size=2^globaldepth;
+    //size=2^g  lobaldepth;
     global_depth=size;
     table=new Bucket*[(int)pow(2,global_depth)];
-    for(int i=0;i<(int)pow(2,global_depth);i++){
-        table[i]=new Bucket();
-    }
+    
     initialize();
 }
 int hashtable::getSizeTable(){
     return pow(2,global_depth);
 }
 void hashtable::initialize(){
-    global_depth=1;
+    for(int i=0;i<(int)pow(2,global_depth);i++){
+    //for(int i=0;i<2;i++){
+        table[i]=new Bucket();
+    }
 }
 int hashtable::hashingKey(char* key){
     //간단한 hash func
-    unsigned long i = 0;
+    unsigned int i = 0;
     for (int j=0; key[j]; j++){
         i += key[j];
     }
-    return i % (long)(pow(2,global_depth));
+    //printf("==%d:%d:%d\n",i,(int)(pow(2,global_depth)),i % (int)(pow(2,global_depth)));
+    return i % (int)(pow(2,global_depth));
 }
-int hashtable::insertKV(char* key,char* value ){
+
+int hashtable::insertKV(char* key,char* value){
     //삽입
-    cout<<"insert"<<endl;
     int index=hashingKey(key);
-    int rtnBucket=0;
-    if((rtnBucket=table[index]->insert(key,value))==-1){
+    //cout<<"insert1:"<<key<<":"<<index<<endl;
+    int rtnBucket=table[index]->insert(key,value);
+    //cout<<"insert2"<<endl;
+    if(rtnBucket==-1){
         //중복이 있거나 삽입에 실패
-        cout<<"fail"<<endl;
+        //cout<<"fail"<<endl;
         return -1;
     }else if(rtnBucket==-2){
-        cout<<"split"<<endl;
         //해당하는 bucket이 꽉참
         //1. doubling 이 필요할 경우 directory doubling
         //2. split
@@ -44,71 +48,86 @@ int hashtable::insertKV(char* key,char* value ){
         }
         
         //2. split
-        
         //index=기존 bucket의 hashtable에서의 index값
         Bucket* newBucket=table[index]->split(index,global_depth);
-        
         //새 bucket을 table 의 index에 넣어줌 
         //ex 기존 bucket 이 4이고 (depth=2)
         //   | | / / 이면
         //   | | | / 으로 바꿔주는 거니까
-        //   1,3 을 split하면 
-        //   1 에서 2^(depth-1)만큼 더해준 곳이 새 bucket이다.
+        //   0,2 을 split하면 
+        //   0(기존 index) 에서 2^(depth-1)만큼 더해준 곳이 새 bucket이다.
+        //cout<<"setBucket"<<endl;
         table[index+(int)pow(2,global_depth-1)]=newBucket;
-        
+        //cout<<"reinsert"<<endl;
         //3. 
         index=hashingKey(key);
         table[index]->insert(key,value); 
-        
-        return rtnBucket;
+        // cout<<table[index]->lookup(key)<<endl;
+        // cout<<"reinsert end"<<endl;
+        return index;
     }
     else{
-        cout<<"Success"<<endl;
-        return rtnBucket;
+        //cout<<"Success"<<endl;
+        return index;
     }
 }
 char* hashtable::searchKV(char* key){
     //
     int index=hashingKey(key);
-    char* rtnValue;
-    char* findValue;
+    char* findValue=(char*)malloc(VALUE_SIZE);
     findValue=table[index]->lookup(key);
     if(findValue==NULL){
-        printf("no key!");
+        cout<<key<<":NO!"<<endl;
         return NULL;
     }
-    strncpy(rtnValue,findValue,VALUE_SIZE);
-    printf("found:%s",rtnValue);
-    return rtnValue;
+    return findValue;
 }
 void hashtable::doubleTable(){
-    //되는지 확인 필요
-
-    //임시 hash table
-    Bucket** temptable=new Bucket*[(int)pow(2,global_depth+1)];
+    cout<<"startDoubling"<<endl;
+    //새 hash table : temptable
+    int temp_index=(int)pow(2,global_depth+1);
+    Bucket** temptable=new Bucket*[temp_index];
     //기존의 table(size= sizeof(Bucket*) * 2^depth개 )
     //새로운 table로 복사
-    memcpy(temptable,table,pow(2,global_depth)*sizeof(Bucket*));
-    table=temptable;
-    //같은 위치를 가리키도록 변경
-    for(int i=0;i<global_depth;i++){
-        table[(int)pow(2,global_depth)+i]=table[i];
+    //memcpy(temptable,table,pow(2,global_depth)*sizeof(Bucket*));
+    for(int j=0;j<pow(2,global_depth);j++){
+        // printf("doubledepth:%d\n",table[j]->getLocaldepth());
+        temptable[j]=table[j];
+        temptable[j+(int)pow(2,global_depth)]=table[j];
     }
-    //다했으니 global_depth를 1증가
-    global_depth++;
     
+    table=temptable;
+    //다했으니 global_depth를 1증가
+    global_depth=global_depth+1;
 }
 
 int main(){
-    hashtable ht(4);
-    char* key=new char[KEY_SIZE];
-    char* value=new char[VALUE_SIZE];
-    for(int i=0;i<KEY_SIZE;i++){
-        key[i]=i;
-        value[i]=i;
+    hashtable ht(2);
+    char* key=(char*)malloc(KEY_SIZE);
+    char* value=(char*)malloc(VALUE_SIZE);
+    int num=500;
+    ifstream is("input.txt");
+    if(is.is_open()){
+        for(int i=0;i<num;i++){
+            string input;
+            getline(is,input);
+            key=(char*)input.c_str();
+            //ht.insertKV(key,key);
+            cout<<"insert:"<<i<<":"<<input<<":"<<endl;;
+            ht.insertKV(key,key);
+        }   
     }
-    ht.insertKV(key,value);
-    printf("search\n");
-    char* rtnvalue=ht.searchKV(key);
-    printf("%s\n",rtnvalue);
+    is.close();
+    cout<<"find"<<endl;
+    ifstream i2s("input.txt");
+    if(i2s.is_open()){
+        for(int i=0;i<num;i++){
+            string input;
+            getline(i2s,input);
+            key=(char*)input.c_str();
+            cout<<"search:"<<i<<":"<<input<<":"<<endl;
+            cout<<ht.searchKV(key)<<endl;
+        }   
+    } 
+    i2s.close();
 }
