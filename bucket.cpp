@@ -21,7 +21,7 @@ int Bucket::insert(char* key,char* value){
     for(int j=0;j<getSize();j++){
         if(bitmap[j]==true){
             if(strncmp(array+j*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,value,VALUE_SIZE)==0){
-                cout<<"중복이 존재!"<<endl;
+                cout<<"중복이 존재!"<<value<<endl;
                 return -1;
             }
         }
@@ -35,7 +35,7 @@ int Bucket::insert(char* key,char* value){
             return i;
         }
     }
-    printf("Bucket: full\n");
+    // printf("Bucket: full\n");
     return -2;
 }
 
@@ -70,30 +70,35 @@ bool Bucket::remove(char* key){
 }
 Bucket* Bucket::split(int hash,int global_depth){
     //
-    cout<<"Bucket:Split"<<endl;
+    // cout<<"Bucket:Split"<<endl;
     local_depth++;
     Bucket* newBucket=new Bucket(local_depth);
     //기존 bucket 탐색
     for(int i=0;i<getSize();i++){
-        char* key=(char*)malloc(KEY_SIZE);
-        char* value=(char*)malloc(VALUE_SIZE);
-        strncpy(key,array+i*(KEY_SIZE+VALUE_SIZE),KEY_SIZE);
-        
-        //new bucket으로 가야하는 값
-        int hashingKey=0;
-        for (int j=0; key[j]; j++){
-        hashingKey += key[j];
+        if(bitmap[i]==true){
+            char* key=(char*)malloc(KEY_SIZE);
+            char* value=(char*)malloc(VALUE_SIZE);
+            strncpy(key,array+i*(KEY_SIZE+VALUE_SIZE),KEY_SIZE);
+            
+            cout<<"split:"<<key<<endl;
+            //new bucket으로 가야하는 값
+            int hashingKey=0;
+            for (int j=0; key[j]; j++){
+            hashingKey += key[j];
+            }
+            hashingKey= hashingKey % (int)(pow(2,global_depth));
+            //기존버킷의 새로운hash값과 다르다면 새로운 버킷으로 옮긴다.
+            if(hashingKey!=hash){
+                strncpy(value,array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,VALUE_SIZE);            
+                cout<<"ValuetoNew"<<value<<endl;
+                //printf("key:%s\nValue:%s\n",key,value);
+                newBucket->insert(key,value);            
+                remove(key);
+            }
         }
-        hashingKey= hashingKey % (int)(pow(2,global_depth));
-        //기존버킷의 hash값과 다르다면 새로운 버킷으로 옮긴다.
-        if(hashingKey!=hash){
-            strncpy(value,array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,VALUE_SIZE);            
-            //printf("key:%s\nValue:%s\n",key,value);
-            remove(key);
-            newBucket->insert(key,value);
-        }
+        // cout<<"splitend"<<endl;
+
     }
-    cout<<"splitend"<<endl;
     return newBucket;
 }
 int8_t Bucket::getLocaldepth(){ 

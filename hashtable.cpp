@@ -14,7 +14,7 @@ int hashtable::getSizeTable(){
 void hashtable::initialize(){
     for(int i=0;i<(int)pow(2,global_depth);i++){
     //for(int i=0;i<2;i++){
-        table[i]=new Bucket();
+        table[i]=new Bucket(global_depth);
     }
 }
 int hashtable::hashingKey(char* key){
@@ -30,12 +30,8 @@ int hashtable::hashingKey(char* key){
 int hashtable::insertKV(char* key,char* value){
     //삽입
     int index=hashingKey(key);
-    //cout<<"insert1:"<<key<<":"<<index<<endl;
     int rtnBucket=table[index]->insert(key,value);
-    //cout<<"insert2"<<endl;
     if(rtnBucket==-1){
-        //중복이 있거나 삽입에 실패
-        //cout<<"fail"<<endl;
         return -1;
     }else if(rtnBucket==-2){
         //해당하는 bucket이 꽉참
@@ -75,7 +71,7 @@ char* hashtable::searchKV(char* key){
     //
     int index=hashingKey(key);
     char* findValue=(char*)malloc(VALUE_SIZE);
-    findValue=table[index]->lookup(key);
+    strncpy(findValue,table[index]->lookup(key),VALUE_SIZE);
     if(findValue==NULL){
         cout<<key<<":NO!"<<endl;
         return NULL;
@@ -83,7 +79,7 @@ char* hashtable::searchKV(char* key){
     return findValue;
 }
 void hashtable::doubleTable(){
-    cout<<"startDoubling"<<endl;
+    cout<<"startDoubling++++++++++++++++++++++++++++++++++++++"<<endl;
     //새 hash table : temptable
     int temp_index=(int)pow(2,global_depth+1);
     Bucket** temptable=new Bucket*[temp_index];
@@ -102,10 +98,10 @@ void hashtable::doubleTable(){
 }
 
 int main(){
-    hashtable ht(2);
+    hashtable ht(1);
     char* key=(char*)malloc(KEY_SIZE);
     char* value=(char*)malloc(VALUE_SIZE);
-    int num=500;
+    int num=999;
     ifstream is("input.txt");
     if(is.is_open()){
         for(int i=0;i<num;i++){
@@ -113,8 +109,8 @@ int main(){
             getline(is,input);
             key=(char*)input.c_str();
             //ht.insertKV(key,key);
-            cout<<"insert:"<<i<<":"<<input<<":"<<endl;;
-            ht.insertKV(key,key);
+            cout<<"insert:"<<i<<":"<<input<<":"<<ht.insertKV(key,key)<<endl;;
+            
         }   
     }
     is.close();
