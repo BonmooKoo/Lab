@@ -8,13 +8,14 @@ int main() {
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
     hashtable ht(1);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 100;
+    int num = 10;
     ifstream is("input.txt");
     if (is.is_open()) {
         for (int i = 0; i < num; i++) {
             string input;
             getline(is, input);
             key = (char*)input.c_str();
+            cout<<i<<endl;
             ht.insertKV(key,key);
             
         }
@@ -41,7 +42,7 @@ int main() {
             string input;
             getline(i2s, input);
             key = (char*)input.c_str();
-            char* Searchval=(char*)malloc(sizeof(char)*VALUE_SIZE);
+            char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
             printf("%d\n",i);
             Searchval=ht.searchKV(key);
             printf("key=%s\nval=%s\n",key,Searchval);  

@@ -114,8 +114,8 @@ bool Bucket::remove(char *key)
 Bucket *Bucket::split(int originalIndex, int global_depth){
     local_depth=local_depth+1;
     Bucket *newBucket = new Bucket(getLocaldepth());
-    char *key = (char *)calloc(KEY_SIZE + 1, sizeof(char));
-    char *value = (char *)calloc(VALUE_SIZE + 1, sizeof(char));
+    char *key = (char *)calloc(KEY_SIZE, sizeof(char));
+    char *value = (char *)calloc(VALUE_SIZE, sizeof(char));
     int pow=1;
     for(int i=0;i<global_depth;i++){
         pow*=2;
@@ -126,12 +126,17 @@ Bucket *Bucket::split(int originalIndex, int global_depth){
         if (this->bitmap[i] == true){
             memcpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
             // new bucket 의 hashtable에서 index
-            int NewIndex = 0;
-            for (int j = 0;j< KEY_SIZE; j++){
-                NewIndex += key[j];
+            int pow=1;
+            for(int i=0;i<global_depth;i++){
+                pow*=2;
             }
-            NewIndex = NewIndex % pow;
-            
+            unsigned h = FIRSTH;
+            for(int i=0;i<KEY_SIZE;i++){
+                h = (h * A) ^ (key[i] * B);
+            }
+            int NewIndex= h % pow;
+            printf("key:%s\nh=%u,locate=%d\n",key,h,NewIndex);
+                
             if (originalIndex<NewIndex)
             {
                 memcpy(value, array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, VALUE_SIZE);
@@ -147,10 +152,10 @@ Bucket *Bucket::split(int originalIndex, int global_depth){
                 //*/
                 }
         }
-        
+        // this->checkBucket();
+        // newBucket->checkBucket();
     }
-    this->checkBucket();
-    newBucket->checkBucket();
+    
     return newBucket;
 }
 int8_t Bucket::getLocaldepth()

@@ -24,10 +24,11 @@ int hashtable::hashingKey(char* key) {
         pow*=2;
     }
     unsigned h = FIRSTH;
-    while (*key) {
-        h = (h * A) ^ (key[0] * B);
-        key++;
+    for(int i=0;i<KEY_SIZE;i++){
+        h = (h * A) ^ (key[i] * B);
     }
+    cout<<key<<endl;
+    printf("key=%s\nh=%u,locate=%d\n",key,h,h%pow);
     return h % pow;
 }
 
@@ -45,7 +46,7 @@ int hashtable::insertKV(char* key, char* value) {
         if (table[index]->getLocaldepth() == global_depth) {
             this->doubleTable();
         }
-        Bucket* newBucket = table[index]->split(index,global_depth);
+        Bucket* newBucket = table[index]->split(index,this->global_depth);
         table[index + (int)pow(2, global_depth - 1)] = newBucket;
         //다시 삽입
         this->insertKV(key,value);
