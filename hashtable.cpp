@@ -19,18 +19,22 @@ void hashtable::initialize() {
     }
 }
 int hashtable::hashingKey(char* key) {
-    //간단한 hash func
-    unsigned int i = 0;
-    for (int j = 0; j<KEY_SIZE; j++) {
-        i += key[j];
+    int pow=1;
+    for(int i=0;i<global_depth;i++){
+        pow*=2;
     }
-    //printf("==%d:%d:%d\n",i,(int)(pow(2,global_depth)),i % (int)(pow(2,global_depth)));
-    return i % (int)(pow(2, global_depth));
+    unsigned h = FIRSTH;
+    while (*key) {
+        h = (h * A) ^ (key[0] * B);
+        key++;
+    }
+    return h % pow;
 }
 
 int hashtable::insertKV(char* key, char* value) {
     //삽입
     int index = hashingKey(key);
+    
     int rtnBucket = table[index]->insert(key, value);
     if (rtnBucket == -1) {
         //중복
@@ -41,7 +45,7 @@ int hashtable::insertKV(char* key, char* value) {
         if (table[index]->getLocaldepth() == global_depth) {
             this->doubleTable();
         }
-        Bucket* newBucket = table[index]->split(index, global_depth);
+        Bucket* newBucket = table[index]->split(index,global_depth);
         table[index + (int)pow(2, global_depth - 1)] = newBucket;
         //다시 삽입
         this->insertKV(key,value);
@@ -55,11 +59,10 @@ int hashtable::insertKV(char* key, char* value) {
 }
 char* hashtable::searchKV(char* key) {
     int index = hashingKey(key);
-    char* findValue = (char*)calloc(VALUE_SIZE, sizeof(char));
-    cout << key << ":" << index << endl;
+    char* findValue;
     findValue = table[index]->lookup(key);
+    printf("LookupKey=%s\nlookupBucket=%d\n",key,index);
     if (findValue == NULL) {
-        cout << key << ":NO!" << endl;
         return NULL;
     }
     table[index]->refCount();
@@ -67,6 +70,7 @@ char* hashtable::searchKV(char* key) {
 }
 void hashtable::doubleTable() {
     //새 hash table : temptable
+    printf("%d:DOUBLE++++++++++++++++++++++++++++++\n",global_depth);
     int total_index=this->getSizeTable();
     int temp_index =this->getSizeTable()*2;
     Bucket** temptable = new Bucket * [temp_index];
@@ -99,4 +103,5 @@ Bucket* hashtable::cacheing(int index){
     if(this->table[index]->getReferenceCounter()>=this->threshold){
         return table[index];
     }
+    return NULL;
 }

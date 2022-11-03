@@ -1,9 +1,13 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
-#define BUCKET_SIZE 1024//Byte
+#define BUCKET_SIZE 300//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
+#define A 54059 /* a prime */
+#define B 76963 /* another prime */
+#define C 86969 /* yet another prime */
+#define FIRSTH 37 /* also prime */
 
 using namespace std;
 

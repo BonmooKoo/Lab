@@ -6,25 +6,21 @@
 
 int main() {
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
-    hashtable ht(10);
+    hashtable ht(1);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 1000;
+    int num = 100;
     ifstream is("input.txt");
     if (is.is_open()) {
         for (int i = 0; i < num; i++) {
             string input;
             getline(is, input);
             key = (char*)input.c_str();
-            cout<<i<<">>";
             ht.insertKV(key,key);
-            // if(i>100){
-            // cout<<i<<endl;
-            // 
-            // }
+            
         }
     }
-    // ht.rtnBucket(0)->checkBucket();
     is.close();
+    //업데이트
     char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
     for(int i=0;i<VALUE_SIZE;i++){
         updateval[i]='a';
@@ -37,6 +33,7 @@ int main() {
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
 
+    //탐색
     cout << "find" << endl;
     ifstream i2s("input.txt");
     if (i2s.is_open()) {
@@ -44,12 +41,16 @@ int main() {
             string input;
             getline(i2s, input);
             key = (char*)input.c_str();
-            // printf("val:%s\n",ht.searchKV(key));  
+            char* Searchval=(char*)malloc(sizeof(char)*VALUE_SIZE);
+            printf("%d\n",i);
+            Searchval=ht.searchKV(key);
+            printf("key=%s\nval=%s\n",key,Searchval);  
         }
     }
     i2s.close();
-    // for(int i=0;i<8;i++){
-    //     cout<<i<<endl;
+    // for(int i=0;i<ht.getSizeTable();i++){
+    //     cout<<"Bucket"<<i<<"============================================================="<<endl;
     //     ht.rtnBucket(i)->checkBucket();
     // }
+    
 }

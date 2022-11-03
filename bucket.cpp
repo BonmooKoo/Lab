@@ -113,38 +113,44 @@ bool Bucket::remove(char *key)
 }
 Bucket *Bucket::split(int originalIndex, int global_depth){
     local_depth=local_depth+1;
-    Bucket *newBucket = new Bucket(local_depth);
+    Bucket *newBucket = new Bucket(getLocaldepth());
     char *key = (char *)calloc(KEY_SIZE + 1, sizeof(char));
     char *value = (char *)calloc(VALUE_SIZE + 1, sizeof(char));
+    int pow=1;
+    for(int i=0;i<global_depth;i++){
+        pow*=2;
+    }
     // 기존 bucket 탐색
     int size = getSize();
     for (int i = 0; i < size; i++){
         if (this->bitmap[i] == true){
             memcpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
-            // new bucket으로 가야하는 값
+            // new bucket 의 hashtable에서 index
             int NewIndex = 0;
             for (int j = 0;j< KEY_SIZE; j++){
                 NewIndex += key[j];
             }
-            NewIndex = NewIndex % (int)(pow(2, global_depth));
-            // 기존버킷의 새로운hash값과 다르다면 새로운 버킷으로 옮긴다.
-            //ex 기존 3 / 4 였던애 들중에는
-            //   3도 있겠지만 7도 있으니까
-            //   4> 8 이되면 3/ 7 로 나뉘니깐
+            NewIndex = NewIndex % pow;
             
             if (originalIndex<NewIndex)
             {
                 memcpy(value, array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, VALUE_SIZE);
-                cout<<local_depth<<"&"<<global_depth<<">"<<key<<":"<<"OriginalHash"<<originalIndex<<"newHash"<<NewIndex<<endl;
+                printf("%d&%d>%s:OriginalHash:%d///NewHash:%d\n",getLocaldepth(),global_depth,key,originalIndex,NewIndex);
                 newBucket->insert(key, value);
-                //this->remove(key);
-                //  memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
-                //  memset(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
-
-                // bitmap[i] = false;
-            }
+                //*remove 1
+                this->remove(key);
+                //*/
+                /*remove 2
+                memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
+                memset(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
+                
+                //*/
+                }
         }
+        
     }
+    this->checkBucket();
+    newBucket->checkBucket();
     return newBucket;
 }
 int8_t Bucket::getLocaldepth()
