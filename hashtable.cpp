@@ -19,17 +19,12 @@ void hashtable::initialize() {
     }
 }
 int hashtable::hashingKey(char* key) {
-    int pow=1;
-    for(int i=0;i<global_depth;i++){
-        pow*=2;
-    }
     unsigned h = FIRSTH;
     for(int i=0;i<KEY_SIZE;i++){
         h = (h * A) ^ (key[i] * B);
     }
-    cout<<key<<endl;
-    printf("key=%s\nh=%u,locate=%d\n",key,h,h%pow);
-    return h % pow;
+    // printf("key=%s\nh=%u,locate=%d\n",key,h,h%pow);
+    return h % (int)pow(2,global_depth);
 }
 
 int hashtable::insertKV(char* key, char* value) {
@@ -42,14 +37,26 @@ int hashtable::insertKV(char* key, char* value) {
         return -1;
     }
     else if (rtnBucket == -2) {
-        //Split
+        //Double
         if (table[index]->getLocaldepth() == global_depth) {
             this->doubleTable();
         }
-        Bucket* newBucket = table[index]->split(index,this->global_depth);
-        table[index + (int)pow(2, global_depth - 1)] = newBucket;
+        
+        //Split
+        int size=this->getSizeTable();
+        int bucketSize=table[index]->getSize();
+            //New Bucket
+        Bucket* newBucket=table[index]->split(index);
+        int currentLocalDepth=table[index]->getLocaldepth();
+        int jumpScale=pow(2,currentLocalDepth);
+        int startPoint=newBucket->getHashValue();
+            //New Bucket 가르키는 index 변경
+        for(int i=startPoint;i<size;i+=jumpScale){
+            table[i]=newBucket;
+        }
         //다시 삽입
-        this->insertKV(key,value);
+        index=hashingKey(key);
+        table[index]->insert(key,value);
         table[index]->refCount();
         return index;
     }

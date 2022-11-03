@@ -36,10 +36,11 @@ class Bucket
         char* lookup(char* key);
         void initialize();
         int getSize();
-        Bucket* split(int hash,int global_depth);
+        Bucket* split(int index);
         void checkBucket();
         int8_t getReferenceCounter();
         void refCount();
+        int getHashValue();
 };
 
 class hashtable{

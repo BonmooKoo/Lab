@@ -8,29 +8,28 @@ int main() {
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
     hashtable ht(1);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 10;
+    int num = 100;
     ifstream is("input.txt");
     if (is.is_open()) {
         for (int i = 0; i < num; i++) {
             string input;
             getline(is, input);
             key = (char*)input.c_str();
-            cout<<i<<endl;
-            ht.insertKV(key,key);
-            
+            cout<<"INPUT"<<i<<endl;
+            ht.insertKV(key,key);  
         }
     }
     is.close();
     //업데이트
-    char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
-    for(int i=0;i<VALUE_SIZE;i++){
-        updateval[i]='a';
-    }
-    // 삭제
+    // char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
+    // for(int i=0;i<VALUE_SIZE;i++){
+    //     updateval[i]='a';
+    // }
     // printf("key:%s\n",ht.searchKV(key));
     // cout<<"update"<<endl;
     // ht.update(key,updateval);
     // printf("Afterupdate:%s\n",ht.searchKV(key));
+    // 삭제
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
 
@@ -53,5 +52,5 @@ int main() {
     //     cout<<"Bucket"<<i<<"============================================================="<<endl;
     //     ht.rtnBucket(i)->checkBucket();
     // }
-    
+    //ht.rtnBucket(5)->checkBucket();
 }

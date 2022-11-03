@@ -111,46 +111,41 @@ bool Bucket::remove(char *key)
     }
     return false;
 }
-Bucket *Bucket::split(int originalIndex, int global_depth){
-    local_depth=local_depth+1;
+Bucket *Bucket::split(int index){
+    local_depth++;
+    int newHash=index%(int)pow(2,local_depth);
     Bucket *newBucket = new Bucket(getLocaldepth());
     char *key = (char *)calloc(KEY_SIZE, sizeof(char));
     char *value = (char *)calloc(VALUE_SIZE, sizeof(char));
-    int pow=1;
-    for(int i=0;i<global_depth;i++){
-        pow*=2;
-    }
-    // 기존 bucket 탐색
     int size = getSize();
+    
+    // 기존 bucket 탐색
     for (int i = 0; i < size; i++){
         if (this->bitmap[i] == true){
             memcpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
             // new bucket 의 hashtable에서 index
-            int pow=1;
-            for(int i=0;i<global_depth;i++){
-                pow*=2;
-            }
             unsigned h = FIRSTH;
             for(int i=0;i<KEY_SIZE;i++){
                 h = (h * A) ^ (key[i] * B);
             }
-            int NewIndex= h % pow;
-            printf("key:%s\nh=%u,locate=%d\n",key,h,NewIndex);
-                
-            if (originalIndex<NewIndex)
+            int keysHash= h % (int)pow(2,local_depth);
+            if (newHash!=keysHash)
             {
                 memcpy(value, array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, VALUE_SIZE);
-                printf("%d&%d>%s:OriginalHash:%d///NewHash:%d\n",getLocaldepth(),global_depth,key,originalIndex,NewIndex);
                 newBucket->insert(key, value);
+                printf("키값=%s이버킷의해쉬:%d//근데 이 키의 해쉬:%d\n",key,newHash,keysHash);
                 //*remove 1
-                this->remove(key);
+                //this->remove(key);
                 //*/
                 /*remove 2
                 memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
                 memset(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
                 
                 //*/
-                }
+                //*remove3 -lazy deletion
+                bitmap[i]=false;
+                //*/
+            }
         }
         // this->checkBucket();
         // newBucket->checkBucket();
@@ -181,4 +176,18 @@ int8_t Bucket::getReferenceCounter(){
 }
 void Bucket::refCount(){
     this->reference_counter++;
+}
+int Bucket::getHashValue(){
+    int hash=0;
+    char *key = (char *)calloc(KEY_SIZE, sizeof(char));
+    for(int i=0;i<getSize();i++){
+        if(bitmap[i]==true){
+            memcpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);            
+            unsigned h = FIRSTH;
+            for(int i=0;i<KEY_SIZE;i++){
+                h = (h * A) ^ (key[i] * B);
+            }
+            return h % (int)pow(2,local_depth);
+        }
+    }
 }
