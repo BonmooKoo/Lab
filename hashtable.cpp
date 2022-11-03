@@ -14,7 +14,6 @@ int hashtable::getSizeTable() {
 }
 void hashtable::initialize() {
     for (int i = 0; i < (int)pow(2, global_depth); i++) {
-        //for(int i=0;i<2;i++){
         table[i] = new Bucket(global_depth);
     }
 }
@@ -23,7 +22,6 @@ int hashtable::hashingKey(char* key) {
     for(int i=0;i<KEY_SIZE;i++){
         h = (h * A) ^ (key[i] * B);
     }
-    // printf("key=%s\nh=%u,locate=%d\n",key,h,h%pow);
     return h % (int)pow(2,global_depth);
 }
 
@@ -69,7 +67,6 @@ char* hashtable::searchKV(char* key) {
     int index = hashingKey(key);
     char* findValue;
     findValue = table[index]->lookup(key);
-    printf("LookupKey=%s\nlookupBucket=%d\n",key,index);
     if (findValue == NULL) {
         return NULL;
     }
@@ -87,10 +84,8 @@ void hashtable::doubleTable() {
     for (int j = 0; j < total_index; j++) {
         temptable[j] = (Bucket*)table[j];
         temptable[j + (int)pow(2, global_depth)] = (Bucket*)table[j];
-        //같은 bucket을 가리킴
     }
     this->table = temptable;
-    //다했으니 global_depth를 1증가
     global_depth++;
 }
 Bucket* hashtable::rtnBucket(int bucket){

@@ -25,7 +25,7 @@ int Bucket::getSize()
 }
 int Bucket::insert(char *key, char *value)
 {
-    // 중복확인을 해야하네?
+    // 중복
     int size = getSize();
     for (int j = 0; j < size; j++)
     {
@@ -42,14 +42,12 @@ int Bucket::insert(char *key, char *value)
     {
         if (bitmap[i] == false)
         {
-            // startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
             memcpy(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE);
             memcpy(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, value, VALUE_SIZE);
             bitmap[i] = true;
             return i;
         }
     }
-    // printf("Bucket: full\n");
     this->reference_counter++;
     return -2;
 }
@@ -57,8 +55,6 @@ int Bucket::insert(char *key, char *value)
 char *Bucket::lookup(char *key)
 {
     int size = getSize();
-    //char *startpoint = (char *)calloc(KEY_SIZE, sizeof(char));
-    
     for (int i = 0; i < size; i++)
     {
         if (bitmap[i] == true)
@@ -99,7 +95,6 @@ bool Bucket::remove(char *key)
     {
         if (bitmap[i] == true)
         {
-            // startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
             if (strncmp(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
             {
                 memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
@@ -133,22 +128,19 @@ Bucket *Bucket::split(int index){
             {
                 memcpy(value, array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, VALUE_SIZE);
                 newBucket->insert(key, value);
-                printf("키값=%s이버킷의해쉬:%d//근데 이 키의 해쉬:%d\n",key,newHash,keysHash);
                 //*remove 1
                 //this->remove(key);
                 //*/
                 /*remove 2
                 memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
                 memset(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
-                
                 //*/
                 //*remove3 -lazy deletion
                 bitmap[i]=false;
                 //*/
+                
             }
         }
-        // this->checkBucket();
-        // newBucket->checkBucket();
     }
     
     return newBucket;
@@ -162,9 +154,9 @@ void Bucket::addLocaldepth()
     local_depth++;
 }
 void Bucket::checkBucket(){
+//버킷 확인용
     int size = getSize();
     char *startpoint = (char *)calloc(KEY_SIZE, sizeof(char));
-    //버킷 확인용
     for (int i = 0; i < size; i++) {
         strncpy(startpoint, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE + 1);
         printf("%d>%s\n",i, startpoint);
