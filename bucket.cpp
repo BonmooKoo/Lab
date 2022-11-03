@@ -1,148 +1,173 @@
 #include "header.h"
+#pragma warning(disable : 4996)
 
-Bucket::Bucket(){
+Bucket::Bucket()
+{
     initialize();
-    local_depth=1;
+    local_depth = 1;
 }
-Bucket::Bucket(int8_t depth){
+Bucket::Bucket(int8_t depth)
+{
     initialize();
-    local_depth=depth;
+    local_depth = depth;
 }
-void Bucket::initialize(){
-    for(int i=0;i<getSize();i++){
-        bitmap[i]=false;
+void Bucket::initialize()
+{   
+    reference_counter=0;
+    for (int i = 0; i < getSize(); i++)
+    {
+        bitmap[i] = false;
     }
 }
-int Bucket::getSize(){
-    return sizeof(array)/(KEY_SIZE+VALUE_SIZE);
+int Bucket::getSize()
+{
+    return sizeof(array) / (KEY_SIZE + VALUE_SIZE);
 }
-int Bucket::insert(char* key,char* value){
-    //중복확인을 해야하네?
-    for(int j=0;j<getSize();j++){
-        if(bitmap[j]==true){
-            if(strncmp(array+j*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,value,VALUE_SIZE)==0){
-                cout<<"중복이 존재!"<<value<<endl;
+int Bucket::insert(char *key, char *value)
+{
+    // 중복확인을 해야하네?
+    int size = getSize();
+    for (int j = 0; j < size; j++)
+    {
+        if (bitmap[j] == true)
+        {
+            if (strncmp(array + j * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, value, VALUE_SIZE) == 0)
+            {
+                cout << "중복이 존재!" << value << endl;
                 return -1;
             }
         }
     }
-    for(int i=0;i<getSize();i++){
-        if(bitmap[i]==false){
-            //startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
-            strncpy(array+i*(KEY_SIZE+VALUE_SIZE),key,KEY_SIZE);
-            strncpy(array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,value,VALUE_SIZE);
-            bitmap[i]=true;
+    for (int i = 0; i < size; i++)
+    {
+        if (bitmap[i] == false)
+        {
+            // startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
+            memcpy(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE);
+            memcpy(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, value, VALUE_SIZE);
+            bitmap[i] = true;
             return i;
         }
     }
     // printf("Bucket: full\n");
+    this->reference_counter++;
     return -2;
 }
 
-char* Bucket::lookup(char* key){
-    char* rtnvalue=(char*)malloc(VALUE_SIZE);
-    for(int i=0;i<getSize();i++){
-        if(bitmap[i]==true){
-            //startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
-            if(strncmp(array+i*(KEY_SIZE+VALUE_SIZE),key,KEY_SIZE)==0){
-                strncpy(rtnvalue,array+i*(KEY_SIZE+VALUE_SIZE)+VALUE_SIZE,VALUE_SIZE);
+char *Bucket::lookup(char *key)
+{
+    int size = getSize();
+    //char *startpoint = (char *)calloc(KEY_SIZE, sizeof(char));
+    
+    for (int i = 0; i < size; i++)
+    {
+        if (bitmap[i] == true)
+        {
+            if (strncmp(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
+            {
+                char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));
+                memcpy(rtnvalue, array + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
                 return rtnvalue;
             }
         }
     }
+
     return NULL;
 }
-bool Bucket::remove(char* key){
-    // char* erasekey=NULL;
-    // char* erasevalue=NULL;
-    for(int i=0;i<getSize();i++){
-        if(bitmap[i]==true){
-            //startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
-            if(strncmp(array+i*(KEY_SIZE+VALUE_SIZE),key,KEY_SIZE)==0){
-                memset(array+i*(KEY_SIZE+VALUE_SIZE),0,KEY_SIZE);
-                memset(array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,0,VALUE_SIZE);
-                bitmap[i]=false;
+void Bucket::update(char* key,char* value){
+    int size = getSize();
+    for (int i = 0; i < size; i++)
+    {
+        if (bitmap[i] == true)
+        {
+            if (strncmp(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
+            {
+                memcpy(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE);
+                memcpy(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, value, VALUE_SIZE);
+                bitmap[i] = true;
+            }
+        }
+    }
+}
+bool Bucket::remove(char *key)
+{
+    char *erasekey = NULL;
+    char *erasevalue = NULL;
+
+    int size = getSize();
+    for (int i = 0; i < size; i++)
+    {
+        if (bitmap[i] == true)
+        {
+            // startpoint=array[i*(KEY_SIZE+VALUE_SIZE)]
+            if (strncmp(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
+            {
+                memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
+                memset(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
+                bitmap[i] = false;
                 return true;
             }
         }
     }
     return false;
 }
-Bucket* Bucket::split(int hash,int global_depth){
-    //
-    // cout<<"Bucket:Split"<<endl;
-    local_depth++;
-    Bucket* newBucket=new Bucket(local_depth);
-    //기존 bucket 탐색
-    for(int i=0;i<getSize();i++){
-        if(bitmap[i]==true){
-            char* key=(char*)malloc(KEY_SIZE);
-            char* value=(char*)malloc(VALUE_SIZE);
-            strncpy(key,array+i*(KEY_SIZE+VALUE_SIZE),KEY_SIZE);
-            
-            cout<<"split:"<<key<<endl;
-            //new bucket으로 가야하는 값
-            int hashingKey=0;
-            for (int j=0; key[j]; j++){
-            hashingKey += key[j];
+Bucket *Bucket::split(int originalIndex, int global_depth){
+    local_depth=local_depth+1;
+    Bucket *newBucket = new Bucket(local_depth);
+    char *key = (char *)calloc(KEY_SIZE + 1, sizeof(char));
+    char *value = (char *)calloc(VALUE_SIZE + 1, sizeof(char));
+    // 기존 bucket 탐색
+    int size = getSize();
+    for (int i = 0; i < size; i++){
+        if (this->bitmap[i] == true){
+            memcpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
+            // new bucket으로 가야하는 값
+            int NewIndex = 0;
+            for (int j = 0;j< KEY_SIZE; j++){
+                NewIndex += key[j];
             }
-            hashingKey= hashingKey % (int)(pow(2,global_depth));
-            //기존버킷의 새로운hash값과 다르다면 새로운 버킷으로 옮긴다.
-            if(hashingKey!=hash){
-                strncpy(value,array+i*(KEY_SIZE+VALUE_SIZE)+KEY_SIZE,VALUE_SIZE);            
-                cout<<"ValuetoNew"<<value<<endl;
-                //printf("key:%s\nValue:%s\n",key,value);
-                newBucket->insert(key,value);            
-                remove(key);
+            NewIndex = NewIndex % (int)(pow(2, global_depth));
+            // 기존버킷의 새로운hash값과 다르다면 새로운 버킷으로 옮긴다.
+            //ex 기존 3 / 4 였던애 들중에는
+            //   3도 있겠지만 7도 있으니까
+            //   4> 8 이되면 3/ 7 로 나뉘니깐
+            
+            if (originalIndex<NewIndex)
+            {
+                memcpy(value, array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, VALUE_SIZE);
+                cout<<local_depth<<"&"<<global_depth<<">"<<key<<":"<<"OriginalHash"<<originalIndex<<"newHash"<<NewIndex<<endl;
+                newBucket->insert(key, value);
+                //this->remove(key);
+                //  memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
+                //  memset(array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
+
+                // bitmap[i] = false;
             }
         }
-        // cout<<"splitend"<<endl;
-
     }
     return newBucket;
 }
-int8_t Bucket::getLocaldepth(){ 
+int8_t Bucket::getLocaldepth()
+{
     return local_depth;
 }
-void Bucket::addLocaldepth(){
+void Bucket::addLocaldepth()
+{
     local_depth++;
 }
-
-// int main(){
-//     Bucket bucket;
-//     bucket.initialize();
-//     int bucketsize=bucket.getSize();
-//     char inkey[KEY_SIZE];
-//     char invalue[VALUE_SIZE];
-//     //printf("%d",sizeof(bucket.array));
-//     for(int j=0;j<bucketsize;j++){
-//         for(int i=0;i<KEY_SIZE;i++){
-//             inkey[i]='z'-j;
-//         }
-//         for(int i=0;i<VALUE_SIZE;i++){
-//             invalue[i]='z'-j;
-//         }
-//         bucket.insert(inkey,invalue);
-//     }
-//     printf("start\n");
-//     for(int j=0;j<bucketsize;j++){
-//         for(int i=0;i<KEY_SIZE;i++){
-//             inkey[i]='z'-j;
-//         }
-//         char* output;
-//         output=bucket.lookup(inkey);
-//         printf("%d:",j);
-//         printf("%s\n",output);
-//     }
-//     for(int i=0;i<KEY_SIZE;i++){
-//             inkey[i]='@';
-//     }
+void Bucket::checkBucket(){
+    int size = getSize();
+    char *startpoint = (char *)calloc(KEY_SIZE, sizeof(char));
+    //버킷 확인용
+    for (int i = 0; i < size; i++) {
+        strncpy(startpoint, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE + 1);
+        printf("%d>%s\n",i, startpoint);
+    }
     
-//     char* output=bucket.lookup(inkey);
-//     printf("%s\n",output);
-//     bucket.remove(inkey);
-
-//     char* output1=bucket.lookup(inkey);
-//     printf("%s\n",output1);
-
-// }
+}
+int8_t Bucket::getReferenceCounter(){
+    return this->reference_counter;
+}
+void Bucket::refCount(){
+    this->reference_counter++;
+}
