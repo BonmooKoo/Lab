@@ -8,7 +8,7 @@ hashtable::hashtable(int8_t size) {
 
     initialize();
 }
-hashtable::hashtable(int8_t size,char* buffer) {
+hashtable::hashtable(int8_t size,char* buffer,int8_t threshold) {
     //size=2^g  lobaldepth;
     threshold=1000;
     global_depth = size;  
@@ -39,6 +39,7 @@ int hashtable::insertKV(char* key, char* value) {
     int rtnBucket = table[index]->insert(key, value);
     if (rtnBucket == -1) {
         //중복
+        table[index]->refCount();    
         return -1;
     }
     else if (rtnBucket == -2) {
@@ -67,17 +68,22 @@ int hashtable::insertKV(char* key, char* value) {
     }
     else {
         //성공
+        table[index]->refCount();
         return index;
     }
 }
 char* hashtable::searchKV(char* key) {
-    int index = hashingKey(key);
     char* findValue;
+    if((findValue=lookupBuffer(key))!=NULL){
+        return findValue;
+    };
+    int index = hashingKey(key);
     findValue = table[index]->lookup(key);
     if (findValue == NULL) {
         return NULL;
     }
     table[index]->refCount();
+    this->cacheing(index);
     return findValue;
 }
 void hashtable::doubleTable() {
@@ -98,14 +104,19 @@ Bucket* hashtable::rtnBucket(int bucket){
     return table[bucket];
 }
 void hashtable::removeKV(char* key){
+    this->removeBuffer(key);
     int index = hashingKey(key);
     table[index]->remove(key);
     table[index]->refCount();
+    this->cacheing(index);
 }
 void hashtable::update(char* key,char* value){
+    
+
     int index = hashingKey(key);
     table[index]->update(key,value);
     table[index]->refCount();
+    this->cacheing(index);
 
 }
 Bucket* hashtable::cacheing(int index){
@@ -113,4 +124,24 @@ Bucket* hashtable::cacheing(int index){
         return table[index];
     }
     return NULL;
+}
+char* hashtable::lookupBuffer(char* key){
+    char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));   
+    for(int i=0;i<BUFFER_SIZE;i++){
+        if (strncmp(buffer + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
+            {
+                memcpy(rtnvalue, buffer + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
+                return rtnvalue;
+            }
+    }
+    return NULL;
+}
+void hashtable::removeBuffer(char* key){
+    for(int i=0;i<BUFFER_SIZE;i++){
+        if (strncmp(buffer + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
+            {
+                memset(buffer + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
+                memset(buffer+ i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
+            }
+    }
 }

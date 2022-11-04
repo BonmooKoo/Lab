@@ -20,7 +20,6 @@ class Bucket
     private:
         //64
         int8_t local_depth;//1
-        int8_t reference_counter; //1
         bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];//63
         char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
     public:
@@ -41,10 +40,7 @@ class Bucket
 
 class hashtable{
     private:
-    //TABLE_SIZE/BUCKET_SIZE
         int8_t global_depth;
-        //char* cache[CACHE_SIZE]
-        //Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)-sizeof(cache)];//1024
         Bucket** table;
         char* buffer;
 

@@ -1,12 +1,11 @@
 #include "header.h"
 #include <fstream>
 #include <string>
-#define BUFFER_SIZE 10
 #pragma warning(disable:4996)
 
 int main() {
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
-    hashtable ht(1);
+    hashtable ht(1,buffer,10);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
     int num = 100000;
     ifstream is("input.txt");
@@ -50,7 +49,7 @@ int main() {
                 count++;
             }
             else {
-                // printf("key=%s\nval=%s\n",key,Searchval);  
+                printf("key=%s\nval=%s\n",key,Searchval);  
             }
         }
         printf("null=%d",count);

@@ -1,9 +1,12 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
+//SIZE
 #define BUCKET_SIZE 300//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
+#define BUFFER_SIZE 10  //Byte
+//FOR HASHFUNCTION
 #define A 54059 /* a prime */
 #define B 76963 /* another prime */
 #define C 86969 /* yet another prime */
@@ -46,14 +49,11 @@ class hashtable{
     //TABLE_SIZE/BUCKET_SIZE
         int8_t global_depth;
         int8_t threshold;
-        //char* cache[CACHE_SIZE]
-        //Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)-sizeof(cache)];//1024
         Bucket** table;
         char* buffer;
-
     public:
         hashtable(int8_t size);
-        hashtable(int8_t size,char* buffer);
+        hashtable(int8_t size,char* buffer,int8_t threshold);
         int insertKV(char* key, char* value);
         void doubleTable();
         void removeKV(char* key);
@@ -63,7 +63,10 @@ class hashtable{
         int hashingKey(char *key);
         Bucket* rtnBucket(int bucket);  
         void update(char* key,char* value);
+        
         Bucket* cacheing(int index);
+        char* lookupBuffer(char* key);
+        void removeBuffer(char* key)
 };
 
 #endif 

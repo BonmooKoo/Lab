@@ -13,7 +13,6 @@ Bucket::Bucket(int8_t depth)
 }
 void Bucket::initialize()
 {   
-    reference_counter=0;
     for (int i = 0; i < getSize(); i++)
     {
         bitmap[i] = false;
@@ -48,20 +47,19 @@ int Bucket::insert(char *key, char *value)
             return i;
         }
     }
-    this->reference_counter++;
     return -2;
 }
 
 char *Bucket::lookup(char *key)
 {
     int size = getSize();
+    char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));
     for (int i = 0; i < size; i++)
     {
         if (bitmap[i] == true)
         {
             if (strncmp(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
             {
-                char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));
                 memcpy(rtnvalue, array + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
                 return rtnvalue;
             }
@@ -163,12 +161,7 @@ void Bucket::checkBucket(){
     }
     
 }
-int8_t Bucket::getReferenceCounter(){
-    return this->reference_counter;
-}
-void Bucket::refCount(){
-    this->reference_counter++;
-}
+
 int Bucket::getHashValue(){
     int hash=0;
     char *key = (char *)calloc(KEY_SIZE, sizeof(char));

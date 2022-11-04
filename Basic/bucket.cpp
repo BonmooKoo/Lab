@@ -13,7 +13,6 @@ Bucket::Bucket(int8_t depth)
 }
 void Bucket::initialize()
 {   
-    reference_counter=0;
     for (int i = 0; i < getSize(); i++)
     {
         bitmap[i] = false;
@@ -48,7 +47,6 @@ int Bucket::insert(char *key, char *value)
             return i;
         }
     }
-    this->reference_counter++;
     return -2;
 }
 

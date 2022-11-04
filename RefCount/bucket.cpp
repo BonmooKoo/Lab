@@ -55,19 +55,18 @@ int Bucket::insert(char *key, char *value)
 char *Bucket::lookup(char *key)
 {
     int size = getSize();
+    char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));
     for (int i = 0; i < size; i++)
     {
         if (bitmap[i] == true)
         {
             if (strncmp(array + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
             {
-                char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));
                 memcpy(rtnvalue, array + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
                 return rtnvalue;
             }
         }
     }
-
     return NULL;
 }
 void Bucket::update(char* key,char* value){

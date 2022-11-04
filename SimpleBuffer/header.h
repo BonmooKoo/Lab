@@ -1,9 +1,12 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
+//SIZE
 #define BUCKET_SIZE 300//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
+#define BUFFER_SIZE 10  //Byte
+//FOR HASHFUNCTION
 #define A 54059 /* a prime */
 #define B 76963 /* another prime */
 #define C 86969 /* yet another prime */
@@ -20,10 +23,7 @@ class Bucket
     private:
         //64
         int8_t local_depth;//1
-        int8_t reference_counter; //1
-        // bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];//63
         bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-2];//62
-        // char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
         char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
     public:
         Bucket();
@@ -38,7 +38,6 @@ class Bucket
         int getSize();
         Bucket* split(int index);
         void checkBucket();
-        int8_t getReferenceCounter();
         void refCount();
         int getHashValue();
 };
@@ -48,14 +47,12 @@ class hashtable{
     //TABLE_SIZE/BUCKET_SIZE
         int8_t global_depth;
         int8_t threshold;
-        //char* cache[CACHE_SIZE]
-        //Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)-sizeof(cache)];//1024
         Bucket** table;
         char* buffer;
-
+        int8_t buffer_counter;
     public:
         hashtable(int8_t size);
-        hashtable(int8_t size,char* buffer);
+        hashtable(int8_t size,char* buffer,int8_t threshold);
         int insertKV(char* key, char* value);
         void doubleTable();
         void removeKV(char* key);
@@ -65,7 +62,11 @@ class hashtable{
         int hashingKey(char *key);
         Bucket* rtnBucket(int bucket);  
         void update(char* key,char* value);
-        Bucket* cacheing(int index);
+        
+        Bucket* cacheing(char* key, char* value);
+        char* lookupBuffer(char* key);
+        void removeBuffer(char* key);
+        void addBufCounter();
 };
 
 #endif 
