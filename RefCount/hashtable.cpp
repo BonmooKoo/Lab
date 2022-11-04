@@ -3,10 +3,17 @@
 
 hashtable::hashtable(int8_t size) {
     //size=2^g  lobaldepth;
-    threshold=1000;
     global_depth = size;  
     table = new Bucket * [(int)pow(2, global_depth)];
 
+    initialize();
+}
+hashtable::hashtable(int8_t size,char* buffer) {
+    //size=2^g  lobaldepth;
+    threshold=1000;
+    global_depth = size;  
+    table = new Bucket * [(int)pow(2, global_depth)];
+    this->buffer=buffer;
     initialize();
 }
 int hashtable::getSizeTable() {
@@ -75,7 +82,6 @@ char* hashtable::searchKV(char* key) {
 }
 void hashtable::doubleTable() {
     //새 hash table : temptable
-    printf("%d:DOUBLE++++++++++++++++++++++++++++++\n",global_depth);
     int total_index=this->getSizeTable();
     int temp_index =this->getSizeTable()*2;
     Bucket** temptable = new Bucket * [temp_index];

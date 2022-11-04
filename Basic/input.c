@@ -12,7 +12,7 @@ int main(){
 		flag[i] = 0;
 	}
 
-	for(i=0; i<10000; i++){
+	for(i=0; i<100000; i++){
 		unsigned long tmpkey =rand()%NUMDATA;
 		while(flag[tmpkey]==1)
 			tmpkey =rand()%NUMDATA;

@@ -21,9 +21,7 @@ class Bucket
         //64
         int8_t local_depth;//1
         int8_t reference_counter; //1
-        // bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];//63
         bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-2];//62
-        // char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
         char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
     public:
         Bucket();
@@ -51,9 +49,11 @@ class hashtable{
         //char* cache[CACHE_SIZE]
         //Bucket* table[TABLE_SIZE/BUCKET_SIZE-sizeof(int16_t)-sizeof(cache)];//1024
         Bucket** table;
+        char* buffer;
 
     public:
         hashtable(int8_t size);
+        hashtable(int8_t size,char* buffer);
         int insertKV(char* key, char* value);
         void doubleTable();
         void removeKV(char* key);
