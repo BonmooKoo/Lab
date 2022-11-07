@@ -48,7 +48,7 @@ int main() {
                 count++;
             }
             else {
-                printf("key=%s\nval=%s\n",key,Searchval);  
+                // printf("key=%s\nval=%s\n",key,Searchval);  
             }
         }
         printf("null=%d",count);

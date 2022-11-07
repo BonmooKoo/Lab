@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/rnqhs/Desktop/DB/Lab/ExtendibleHashTable",
-      "program": "c:/Users/rnqhs/Desktop/DB/Lab/ExtendibleHashTable/build/Debug/outDebug",
+      "cwd": "c:/Users/rnqhs/Desktop/C/Bucket/Lab",
+      "program": "c:/Users/rnqhs/Desktop/C/Bucket/Lab/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

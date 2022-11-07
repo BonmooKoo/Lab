@@ -55,7 +55,6 @@ class hashtable{
         int hashingKey(char *key);
         Bucket* rtnBucket(int bucket);  
         void update(char* key,char* value);
-        Bucket* cacheing(int index);
 };
 
 #endif 

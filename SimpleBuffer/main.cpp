@@ -5,9 +5,9 @@
 
 int main() {
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
-    hashtable ht(1,buffer,10);
+    hashtable ht(1,buffer);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 100000;
+    int num = 100;
     ifstream is("input.txt");
     if (is.is_open()) {
         for (int i = 0; i < num; i++) {
@@ -45,11 +45,11 @@ int main() {
             // printf("%d\n",i);
             Searchval=ht.searchKV(key);
             if(Searchval==NULL){
-                printf("null\n");
+                printf("%d:null\n",i);
                 count++;
             }
             else {
-                printf("key=%s\nval=%s\n",key,Searchval);  
+                //printf("key=%s\nval=%s\n",key,Searchval);  
             }
         }
         printf("null=%d",count);

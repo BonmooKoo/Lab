@@ -5,7 +5,7 @@
 #define BUCKET_SIZE 300//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
-#define BUFFER_SIZE 10  //Byte
+#define BUFFER_SIZE 100  //Byte
 //FOR HASHFUNCTION
 #define A 54059 /* a prime */
 #define B 76963 /* another prime */
@@ -38,7 +38,6 @@ class Bucket
         int getSize();
         Bucket* split(int index);
         void checkBucket();
-        void refCount();
         int getHashValue();
 };
 
@@ -51,8 +50,7 @@ class hashtable{
         char* buffer;
         int8_t buffer_counter;
     public:
-        hashtable(int8_t size);
-        hashtable(int8_t size,char* buffer,int8_t threshold);
+        hashtable(int8_t size,char* buffer);
         int insertKV(char* key, char* value);
         void doubleTable();
         void removeKV(char* key);
@@ -63,7 +61,7 @@ class hashtable{
         Bucket* rtnBucket(int bucket);  
         void update(char* key,char* value);
         
-        Bucket* cacheing(char* key, char* value);
+        Bucket* cacheingKV(char* key, char* value);
         char* lookupBuffer(char* key);
         void removeBuffer(char* key);
         void addBufCounter();
