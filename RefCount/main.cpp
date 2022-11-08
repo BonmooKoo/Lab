@@ -4,7 +4,7 @@
 #pragma warning(disable:4996)
 
 int main() {
-    char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
+    Bucket* buffer[BUFFER_SIZE];
     hashtable ht(1,buffer,10);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
     int num = 100000;

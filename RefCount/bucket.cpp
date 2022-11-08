@@ -165,9 +165,13 @@ void Bucket::checkBucket(){
 int8_t Bucket::getReferenceCounter(){
     return this->reference_counter;
 }
-void Bucket::refCount(){
-    this->reference_counter++;
-}
+bool Bucket::refCount(int threshold){
+    if(this->reference_counter=threshold){
+        return true;
+    }
+    else{
+        return false;
+    }}
 int Bucket::getHashValue(){
     int hash=0;
     char *key = (char *)calloc(KEY_SIZE, sizeof(char));

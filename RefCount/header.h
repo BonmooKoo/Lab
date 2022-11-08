@@ -40,7 +40,7 @@ class Bucket
         Bucket* split(int index);
         void checkBucket();
         int8_t getReferenceCounter();
-        void refCount();
+        bool refCount(int threshold);
         int getHashValue();
 };
 
@@ -50,10 +50,10 @@ class hashtable{
         int8_t global_depth;
         int8_t threshold;
         Bucket** table;
-        char* buffer;
+        Bucket** buffer;
+        int8_t buffer_counter;
     public:
-        hashtable(int8_t size);
-        hashtable(int8_t size,char* buffer,int8_t threshold);
+        hashtable(int8_t size,Bucket** buffer,int8_t threshold);
         int insertKV(char* key, char* value);
         void doubleTable();
         void removeKV(char* key);
@@ -64,6 +64,21 @@ class hashtable{
         Bucket* rtnBucket(int bucket);  
         void update(char* key,char* value);
         
+
+        /*
+        Basic reference counter idea:
+        모든 insert, search, update, remove 시 reference counter ++
+        if reference counter >= threshold {
+            bucket을 buffer에 저장
+        }
+        
+        search : 
+            먼저 buffer을 확인
+            buffer에 bucket이 있으면 해당 bucket 확인
+
+        insert : 
+            먼저 buffer을 확인
+        */
         Bucket* cacheing(int index);
         char* lookupBuffer(char* key);
         void removeBuffer(char* key)

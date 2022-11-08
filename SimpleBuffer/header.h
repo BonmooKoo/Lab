@@ -24,7 +24,7 @@ class Bucket
         //64
         int8_t local_depth;//1
         bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-2];//62
-        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
+        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
     public:
         Bucket();
         Bucket(int8_t local_depth);
