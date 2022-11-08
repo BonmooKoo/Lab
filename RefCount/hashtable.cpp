@@ -1,16 +1,10 @@
 #include "header.h"
 #pragma warning(disable:4996)
 
-hashtable::hashtable(int8_t size) {
+hashtable::hashtable(int8_t size,Bucket** buffer,int8_t threshold) {
     //size=2^g  lobaldepth;
-    global_depth = size;  
-    table = new Bucket * [(int)pow(2, global_depth)];
-
-    initialize();
-}
-hashtable::hashtable(int8_t size,char* buffer,int8_t threshold) {
-    //size=2^g  lobaldepth;
-    threshold=1000;
+    this->threshold=threshold;
+    this->buffer_counter=0;
     global_depth = size;  
     table = new Bucket * [(int)pow(2, global_depth)];
     this->buffer=buffer;
@@ -39,7 +33,9 @@ int hashtable::insertKV(char* key, char* value) {
     int rtnBucket = table[index]->insert(key, value);
     if (rtnBucket == -1) {
         //중복
-        table[index]->refCount();    
+        if(table[index]->refCount(threshold)){
+            cacheing(index);
+        }; 
         return -1;
     }
     else if (rtnBucket == -2) {
@@ -63,12 +59,16 @@ int hashtable::insertKV(char* key, char* value) {
         //다시 삽입
         index=hashingKey(key);
         table[index]->insert(key,value);
-        table[index]->refCount();
+        if(table[index]->refCount(threshold)){
+            cacheing(index);
+        };
         return index;
     }
     else {
         //성공
-        table[index]->refCount();
+        if(table[index]->refCount(threshold)){
+            cacheing(index);
+        };
         return index;
     }
 }
@@ -82,7 +82,7 @@ char* hashtable::searchKV(char* key) {
     if (findValue == NULL) {
         return NULL;
     }
-    table[index]->refCount();
+    table[index]->refCount(threshold);
     this->cacheing(index);
     return findValue;
 }
@@ -107,16 +107,17 @@ void hashtable::removeKV(char* key){
     this->removeBuffer(key);
     int index = hashingKey(key);
     table[index]->remove(key);
-    table[index]->refCount();
-    this->cacheing(index);
+    if(table[index]->refCount(threshold)){
+            cacheing(index);
+    };
 }
 void hashtable::update(char* key,char* value){
-    
-
     int index = hashingKey(key);
     table[index]->update(key,value);
-    table[index]->refCount();
-    this->cacheing(index);
+    table[index]->refCount(threshold);
+    if(table[index]->refCount(threshold)){
+            cacheing(index);
+    };
 
 }
 Bucket* hashtable::cacheing(int index){
@@ -126,22 +127,13 @@ Bucket* hashtable::cacheing(int index){
     return NULL;
 }
 char* hashtable::lookupBuffer(char* key){
-    char *rtnvalue = (char *)calloc(KEY_SIZE+1, sizeof(char));   
-    for(int i=0;i<BUFFER_SIZE;i++){
-        if (strncmp(buffer + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
-            {
-                memcpy(rtnvalue, buffer + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
-                return rtnvalue;
-            }
+    for(int i=buffer_counter-1;i>=0;i--){
+        
     }
-    return NULL;
+    for(int i=BUFFER_SIZE-1;i>=buffer_counter;i--){
+        
+    }
 }
 void hashtable::removeBuffer(char* key){
-    for(int i=0;i<BUFFER_SIZE;i++){
-        if (strncmp(buffer + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
-            {
-                memset(buffer + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
-                memset(buffer+ i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, 0, VALUE_SIZE);
-            }
-    }
+    
 }
