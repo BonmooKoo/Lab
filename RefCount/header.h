@@ -73,11 +73,12 @@ class hashtable{
         }
         
         search : 
-            먼저 buffer을 확인
+            먼저 buffer을 확인 (어캐확인할까 고민)
             buffer에 bucket이 있으면 해당 bucket 확인
 
         insert : 
             먼저 buffer을 확인
+            buffer에 bucket이 있으면 
         */
         Bucket* cacheing(int index);
         char* lookupBuffer(char* key);
