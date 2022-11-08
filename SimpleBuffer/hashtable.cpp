@@ -113,7 +113,6 @@ char* hashtable::lookupBuffer(char* key){
     for(int i=buffer_counter-1;i>=0;i--){
         if (strncmp(buffer + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
             {
-                cout<<"match1!"<<key<<endl;
                 memcpy(rtnvalue, buffer + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
                 return rtnvalue;
             }
@@ -121,7 +120,6 @@ char* hashtable::lookupBuffer(char* key){
     for(int i=BUFFER_SIZE-1;i>=buffer_counter;i--){
         if (strncmp(buffer + i * (KEY_SIZE + VALUE_SIZE), key, KEY_SIZE) == 0)
             {   
-                cout<<"match2!"<<key<<endl;
                 memcpy(rtnvalue, buffer + i * (KEY_SIZE + VALUE_SIZE) + VALUE_SIZE, VALUE_SIZE);
                 return rtnvalue;
             }

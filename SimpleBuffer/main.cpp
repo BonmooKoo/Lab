@@ -7,7 +7,7 @@ int main() {
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
     hashtable ht(1,buffer);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 100;
+    int num = 100000;
     ifstream is("input.txt");
     if (is.is_open()) {
         for (int i = 0; i < num; i++) {
@@ -49,7 +49,7 @@ int main() {
                 count++;
             }
             else {
-                printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
+                //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
             }
         }
         printf("null=%d\n",count);

@@ -51,7 +51,7 @@ int main() {
                 // printf("key=%s\nval=%s\n",key,Searchval);  
             }
         }
-        printf("null=%d",count);
+        printf("null=%d\n",count);
     }
     i2s.close();
     // for(int i=0;i<ht.getSizeTable();i++){
