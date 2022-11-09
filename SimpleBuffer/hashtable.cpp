@@ -97,7 +97,6 @@ void hashtable::removeKV(char* key){
 }
 void hashtable::update(char* key,char* value){
     this->cacheingKV(key,value);
-
     int index = hashingKey(key);
     table[index]->update(key,value);
 }

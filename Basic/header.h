@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
+#include <unistd.h>
+
 #define BUCKET_SIZE 300//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
@@ -55,6 +57,8 @@ class hashtable{
         int hashingKey(char *key);
         Bucket* rtnBucket(int bucket);  
         void update(char* key,char* value);
+        void writeBucket(int fd);
+        void readBucket(int fd);
 };
 
 #endif 

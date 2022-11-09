@@ -95,5 +95,10 @@ void hashtable::removeKV(char* key){
 void hashtable::update(char* key,char* value){
     int index = hashingKey(key);
     table[index]->update(key,value);
+}
+void hashtable::writeBucket(int fd){
+    
+}
+void hashtable::readBucket(int fd){
 
 }

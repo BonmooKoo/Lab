@@ -127,8 +127,11 @@ Bucket* hashtable::cacheing(int index){
     return NULL;
 }
 char* hashtable::lookupBuffer(char* key){
+    int hash=hashingKey(key);
     for(int i=buffer_counter-1;i>=0;i--){
-        
+        if(buffer[i]!=NULL){
+            
+        }
     }
     for(int i=BUFFER_SIZE-1;i>=buffer_counter;i--){
         

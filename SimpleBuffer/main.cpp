@@ -33,8 +33,8 @@ int main() {
     // printf("key:%s\n",ht.searchKV(key));
     // cout<<"update"<<endl;
     // ht.update(key,updateval);
-    // printf("Afterupdate:%s\n",ht.searchKV(key));
-    // 삭제
+    // cout<<ht.searchKV(key)<<endl;
+    //삭제
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
     

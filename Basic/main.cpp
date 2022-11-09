@@ -25,14 +25,14 @@ int main() {
     double result=double(end-start);
     cout<<"input time="<<result/CLOCKS_PER_SEC<<"sec"<<endl;
     //업데이트
-    // char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
-    // for(int i=0;i<VALUE_SIZE;i++){
-    //     updateval[i]='a';
-    // }
-    // printf("key:%s\n",ht.searchKV(key));
-    // cout<<"update"<<endl;
-    // ht.update(key,updateval);
-    // printf("Afterupdate:%s\n",ht.searchKV(key));
+    char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
+    for(int i=0;i<VALUE_SIZE;i++){
+        updateval[i]='a';
+    }
+    printf("key:%s\n",ht.searchKV(key));
+    cout<<"update"<<endl;
+    ht.update(key,updateval);
+    printf("Afterupdate:%s\n",ht.searchKV(key));
     // 삭제
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
