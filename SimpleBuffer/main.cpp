@@ -1,14 +1,17 @@
 #include "header.h"
 #include <fstream>
 #include <string>
+#include <time.h>
 #pragma warning(disable:4996)
 
 int main() {
+    clock_t start,end;
     char buffer[BUFFER_SIZE*(KEY_SIZE+VALUE_SIZE)];
     hashtable ht(1,buffer);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 100000;
+    int num = 1000000;
     ifstream is("input.txt");
+    start=clock();
     if (is.is_open()) {
         for (int i = 0; i < num; i++) {
             string input;
@@ -19,6 +22,9 @@ int main() {
         }
     }
     is.close();
+    end=clock();
+    double result=double(end-start);
+    cout<<"input time="<<result/CLOCKS_PER_SEC<<"sec"<<endl;
     //업데이트
     // char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
     // for(int i=0;i<VALUE_SIZE;i++){
@@ -31,11 +37,12 @@ int main() {
     // 삭제
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
-
+    
     //탐색
     cout << "find" << endl;
     ifstream i2s("input.txt");
     int count=0;
+    start=clock();
     if (i2s.is_open()) {
         for (int i = 0; i < num; i++) {
             string input;
@@ -55,6 +62,9 @@ int main() {
         printf("null=%d\n",count);
     }
     i2s.close();
+    end=clock();
+    result=double(end-start)/CLOCKS_PER_SEC;
+    cout<<"search time="<<result<<"sec"<<endl;
     // for(int i=0;i<ht.getSizeTable();i++){
     //     cout<<"Bucket"<<i<<"============================================================="<<endl;
     //     ht.rtnBucket(i)->checkBucket();
