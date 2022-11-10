@@ -8,7 +8,9 @@ int main() {
     clock_t start,end;
     hashtable ht(1);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 1000000;
+    int num = 100;
+    char* filename="input2.txt";
+    int fd=open(filename,O_RDWR);
     ifstream is("input.txt");
     start=clock();
     if (is.is_open()) {
@@ -24,16 +26,16 @@ int main() {
     end=clock();
     double result=double(end-start);
     cout<<"input time="<<result/CLOCKS_PER_SEC<<"sec"<<endl;
-    //업데이트
-    char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
-    for(int i=0;i<VALUE_SIZE;i++){
-        updateval[i]='a';
-    }
-    printf("key:%s\n",ht.searchKV(key));
-    cout<<"update"<<endl;
-    ht.update(key,updateval);
-    printf("Afterupdate:%s\n",ht.searchKV(key));
-    // 삭제
+//업데이트
+    // char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
+    // for(int i=0;i<VALUE_SIZE;i++){
+    //     updateval[i]='a';
+    // }
+    // printf("key:%s\n",ht.searchKV(key));
+    // cout<<"update"<<endl;
+    // ht.update(key,updateval);
+    // printf("Afterupdate:%s\n",ht.searchKV(key));
+// 삭제
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
 
@@ -64,9 +66,6 @@ int main() {
     end=clock();
     result=double(end-start)/CLOCKS_PER_SEC;
     cout<<"search time="<<result<<"sec"<<endl;
-    // for(int i=0;i<ht.getSizeTable();i++){
-    //     cout<<"Bucket"<<i<<"============================================================="<<endl;
-    //     ht.rtnBucket(i)->checkBucket();
-    // }
-    //ht.rtnBucket(5)->checkBucket();
+    ht.rtnBucket(0)->checkBucket();
+    ht.writeBucket(fd);
 }

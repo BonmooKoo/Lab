@@ -1,9 +1,11 @@
+#include <unistd.h>
 #include <iostream>
 #include <cstring>
+#include <fcntl.h>
+#include <sys/types.h>
 #include <cmath>
-#include <unistd.h>
 
-#define BUCKET_SIZE 300//Byte
+#define BUCKET_SIZE 1024//Byte
 #define KEY_SIZE 8      //Byte
 #define VALUE_SIZE 8    //Byte
 #define A 54059 /* a prime */
@@ -22,8 +24,9 @@ class Bucket
     private:
         //64
         int8_t local_depth;//1
-        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];//63
-        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)]; //60 * 16 B
+        // int8_t fingerprint;
+        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];
+        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)];
     public:
         Bucket();
         Bucket(int8_t local_depth);
@@ -38,6 +41,7 @@ class Bucket
         Bucket* split(int index);
         void checkBucket();
         int getHashValue();
+        void writeBucket(int fd,int offset);
 };
 
 class hashtable{

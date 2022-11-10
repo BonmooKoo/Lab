@@ -127,7 +127,7 @@ Bucket *Bucket::split(int index){
                 memcpy(value, array + i * (KEY_SIZE + VALUE_SIZE) + KEY_SIZE, VALUE_SIZE);
                 newBucket->insert(key, value);
                 //*remove 1
-                //this->remove(key);
+                this->remove(key);
                 //*/
                 /*remove 2
                 memset(array + i * (KEY_SIZE + VALUE_SIZE), 0, KEY_SIZE);
@@ -156,7 +156,7 @@ void Bucket::checkBucket(){
     int size = getSize();
     char *startpoint = (char *)calloc(KEY_SIZE, sizeof(char));
     for (int i = 0; i < size; i++) {
-        strncpy(startpoint, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE + 1);
+        strncpy(startpoint, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
         printf("%d>%s\n",i, startpoint);
     }
     
@@ -174,5 +174,23 @@ int Bucket::getHashValue(){
             }
             return h % (int)pow(2,local_depth);
         }
+    }
+}
+
+void Bucket::writeBucket(int fd,int offset){
+    int size=getSize();
+    char* enter="\n";
+    offset+=pwrite(fd,this->local_depth,);
+    for(int i=0;i<size;i++){
+        char* key=(char*)malloc(KEY_SIZE*sizeof(char));
+        key[KEY_SIZE]=' ';
+        char* value=(char*)malloc(VALUE_SIZE*sizeof(char));
+        value[VALUE_SIZE]=' ';
+        memcpy(key,array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
+        memcpy(value,array + i * (KEY_SIZE + VALUE_SIZE)+KEY_SIZE, VALUE_SIZE);
+        offset+=pwrite(fd,key,strlen(key),offset);
+        offset+=pwrite(fd,enter,1,offset);
+        offset+=pwrite(fd,value,strlen(value),offset);
+        offset+=pwrite(fd,enter,1,offset);        
     }
 }

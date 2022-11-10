@@ -97,7 +97,10 @@ void hashtable::update(char* key,char* value){
     table[index]->update(key,value);
 }
 void hashtable::writeBucket(int fd){
-    
+    int size=this->getSizeTable();
+    for(int i=0;i<size;i++){
+        table[i]->writeBucket(fd,BUCKET_SIZE*i);
+    }
 }
 void hashtable::readBucket(int fd){
 
