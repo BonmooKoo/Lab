@@ -2,10 +2,10 @@
 #pragma warning(disable:4996)
 
 hashtable::hashtable(int8_t size) {
-    //size=2^g  lobaldepth;
-    global_depth = size;  
+    //size=2^g  localdepth;
+    global_depth = size;
+    
     table = new Bucket * [(int)pow(2, global_depth)];
-
     initialize();
 }
 
@@ -28,7 +28,7 @@ int hashtable::hashingKey(char* key) {
 int hashtable::insertKV(char* key, char* value) {
     //삽입
     int index = hashingKey(key);
-    
+
     int rtnBucket = table[index]->insert(key, value);
     if (rtnBucket == -1) {
         //중복
@@ -98,8 +98,10 @@ void hashtable::update(char* key,char* value){
 }
 void hashtable::writeBucket(int fd){
     int size=this->getSizeTable();
+    int offset=0;
     for(int i=0;i<size;i++){
-        table[i]->writeBucket(fd,BUCKET_SIZE*i);
+        offset+=table[i]->writeBucket(fd,BUCKET_SIZE*i);
+        printf("off=%d",offset);
     }
 }
 void hashtable::readBucket(int fd){
