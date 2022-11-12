@@ -10,7 +10,8 @@ int main() {
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
     int num = 100;
     char* filename="input2.txt";
-    int fd=open(filename,O_RDWR);
+    // int fd=open(filename,O_RDWR);
+    int fd=open(filename,O_RDWR|O_TRUNC);
     ifstream is("input.txt");
     start=clock();
     if (is.is_open()) {
@@ -67,5 +68,9 @@ int main() {
     result=double(end-start)/CLOCKS_PER_SEC;
     cout<<"search time="<<result<<"sec"<<endl;
     ht.rtnBucket(0)->checkBucket();
-    ht.writeBucket(fd);
+    ht.rtnBucket(0)->readBucket(fd);
+    ht.rtnBucket(0)->checkBucket();
+
+    // ht.writeBucket(fd);
+
 }

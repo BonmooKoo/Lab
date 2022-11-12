@@ -4,10 +4,10 @@
 Bucket::Bucket()
 {
     initialize();
+    fingerprint=9;
     local_depth = 1;
 }
-Bucket::Bucket(int8_t depth)
-{
+Bucket::Bucket(int8_t depth){
     initialize();
     local_depth = depth;
 }
@@ -143,8 +143,7 @@ Bucket *Bucket::split(int index){
     
     return newBucket;
 }
-int8_t Bucket::getLocaldepth()
-{
+int8_t Bucket::getLocaldepth(){
     return local_depth;
 }
 void Bucket::addLocaldepth()
@@ -177,20 +176,32 @@ int Bucket::getHashValue(){
     }
 }
 
-void Bucket::writeBucket(int fd,int offset){
+int Bucket::writeBucket(int fd,int offset){
     int size=getSize();
     char* enter="\n";
-    offset+=pwrite(fd,this->local_depth,);
-    for(int i=0;i<size;i++){
-        char* key=(char*)malloc(KEY_SIZE*sizeof(char));
-        key[KEY_SIZE]=' ';
-        char* value=(char*)malloc(VALUE_SIZE*sizeof(char));
-        value[VALUE_SIZE]=' ';
-        memcpy(key,array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
-        memcpy(value,array + i * (KEY_SIZE + VALUE_SIZE)+KEY_SIZE, VALUE_SIZE);
-        offset+=pwrite(fd,key,strlen(key),offset);
-        offset+=pwrite(fd,enter,1,offset);
-        offset+=pwrite(fd,value,strlen(value),offset);
-        offset+=pwrite(fd,enter,1,offset);        
+    char* t="1";
+    char* f="0";
+    
+    //int8_t local depth , fingerprint
+    write(fd,this,sizeof(int8_t)*2);
+
+    //bitmap
+    int boolsize=sizeof(bitmap);
+    for(int i=0;i<boolsize;i++){
+        if(this->bitmap[i]){
+            write(fd,t,1);
+        }
+        else{
+            write(fd,f,1);
+        }
     }
+
+    //full array
+    int arrsize=sizeof(array);
+    write(fd,array,arrsize);
+}
+void Bucket::readBucket(int fd){
+    //파일 처음부터
+    lseek(fd,0,SEEK_SET);
+    read(fd,this->localdepth,)
 }

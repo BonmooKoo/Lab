@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <cmath>
+#include <climits>
 
 #define BUCKET_SIZE 1024//Byte
 #define KEY_SIZE 8      //Byte
@@ -18,15 +19,14 @@ using namespace std;
 #ifndef _HEADER_H_
 #define _HEADER_H_
 
-
 class Bucket
 {
     private:
         //64
         int8_t local_depth;//1
-        // int8_t fingerprint;
-        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-1];
-        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(bitmap)];
+        int8_t fingerprint;
+        bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-2];
+        char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(int8_t)-sizeof(bitmap)];
     public:
         Bucket();
         Bucket(int8_t local_depth);
@@ -41,7 +41,8 @@ class Bucket
         Bucket* split(int index);
         void checkBucket();
         int getHashValue();
-        void writeBucket(int fd,int offset);
+        void readBucket(int fd);
+        int writeBucket(int fd,int offset);
 };
 
 class hashtable{
