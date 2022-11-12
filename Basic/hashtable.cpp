@@ -105,5 +105,13 @@ void hashtable::writeBucket(int fd){
     }
 }
 void hashtable::readBucket(int fd){
-
+    //txt를 읽어서 Bucket을 생성
+    lseek(fd,0,SEEK_SET);
+    int size=this->getSizeTable();
+    int offset=0;
+    for(int i=0;i<size;i++){
+        Bucket* newbucket=new Bucket();
+        newbucket->readBucket(fd);
+        this->table[i]=newbucket;
+    }
 }

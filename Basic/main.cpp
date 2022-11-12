@@ -11,7 +11,7 @@ int main() {
     int num = 100;
     char* filename="input2.txt";
     // int fd=open(filename,O_RDWR);
-    int fd=open(filename,O_RDWR|O_TRUNC);
+    int fd=open(filename,O_RDWR);
     ifstream is("input.txt");
     start=clock();
     if (is.is_open()) {
@@ -23,10 +23,12 @@ int main() {
             ht.insertKV(key,key);  
         }
     }
+    
     is.close();
     end=clock();
     double result=double(end-start);
     cout<<"input time="<<result/CLOCKS_PER_SEC<<"sec"<<endl;
+    // ht.rtnBucket(0)->checkBucket();
 //업데이트
     // char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
     // for(int i=0;i<VALUE_SIZE;i++){
@@ -40,37 +42,42 @@ int main() {
     // ht.removeKV(key);
     // printf("%s\n",ht.searchKV(key));
 
-    //탐색
-    cout << "find" << endl;
-    ifstream i2s("input.txt");
-    int count=0;
-    start=clock();
-    if (i2s.is_open()) {
-        for (int i = 0; i < num; i++) {
-            string input;
-            getline(i2s, input);
-            key = (char*)input.c_str();
-            char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
-            // printf("%d\n",i);
-            Searchval=ht.searchKV(key);
-            if(Searchval==NULL){
-                printf("%d:null\n",i);
-                count++;
-            }
-            else {
-                //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
-            }
-        }
-        printf("null=%d\n",count);
-    }
-    i2s.close();
-    end=clock();
-    result=double(end-start)/CLOCKS_PER_SEC;
-    cout<<"search time="<<result<<"sec"<<endl;
+//탐색
+    // cout << "find" << endl;
+    // ifstream i2s("input.txt");
+    // int count=0;
+    // start=clock();
+    // if (i2s.is_open()) {
+    //     for (int i = 0; i < num; i++) {
+    //         string input;
+    //         getline(i2s, input);
+    //         key = (char*)input.c_str();
+    //         char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
+    //         // printf("%d\n",i);
+    //         Searchval=ht.searchKV(key);
+    //         if(Searchval==NULL){
+    //             printf("%d:null\n",i);
+    //             count++;
+    //         }
+    //         else {
+    //             //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
+    //         }
+    //     }
+    //     printf("null=%d\n",count);
+    // }
+    // i2s.close();
+    // end=clock();
+    // result=double(end-start)/CLOCKS_PER_SEC;
+    // cout<<"search time="<<result<<"sec"<<endl;
+//RW
+    char* searchKey="49105041";
+    // cout<<"write"<<endl;
+    ht.writeBucket(fd);
+    ht.readBucket(fd);
+    cout<<"check"<<endl;
     ht.rtnBucket(0)->checkBucket();
-    ht.rtnBucket(0)->readBucket(fd);
-    ht.rtnBucket(0)->checkBucket();
-
-    // ht.writeBucket(fd);
+    ht.rtnBucket(1)->checkBucket();
+    
+    printf("val=%s\n",ht.searchKV(searchKey)); 
 
 }

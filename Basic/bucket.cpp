@@ -9,6 +9,7 @@ Bucket::Bucket()
 }
 Bucket::Bucket(int8_t depth){
     initialize();
+    fingerprint=9;
     local_depth = depth;
 }
 void Bucket::initialize()
@@ -153,10 +154,16 @@ void Bucket::addLocaldepth()
 void Bucket::checkBucket(){
 //버킷 확인용
     int size = getSize();
-    char *startpoint = (char *)calloc(KEY_SIZE, sizeof(char));
+    char *key = (char *)calloc(KEY_SIZE, sizeof(char));
+    char *value = (char *)calloc(KEY_SIZE, sizeof(char));
+    
     for (int i = 0; i < size; i++) {
-        strncpy(startpoint, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
-        printf("%d>%s\n",i, startpoint);
+        strncpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
+        strncpy(value, array + i * (KEY_SIZE + VALUE_SIZE)+KEY_SIZE, VALUE_SIZE);
+        
+        printf("%d>%s\n",i, key);
+        printf("%d>%s\n",i, value);
+        
     }
     
 }
@@ -181,12 +188,13 @@ int Bucket::writeBucket(int fd,int offset){
     char* enter="\n";
     char* t="1";
     char* f="0";
-    
+    lseek(fd,offset,SEEK_SET);
     //int8_t local depth , fingerprint
     write(fd,this,sizeof(int8_t)*2);
 
     //bitmap
     int boolsize=sizeof(bitmap);
+    char bitmapbuffer[boolsize];
     for(int i=0;i<boolsize;i++){
         if(this->bitmap[i]){
             write(fd,t,1);
@@ -201,7 +209,31 @@ int Bucket::writeBucket(int fd,int offset){
     write(fd,array,arrsize);
 }
 void Bucket::readBucket(int fd){
+    // printf("depth=%d",this->local_depth);
+    char* t="1";
+    char* f="0";
     //파일 처음부터
-    lseek(fd,0,SEEK_SET);
-    read(fd,this->localdepth,)
+    // lseek(fd,offset,SEEK_SET);
+    char* buffer=(char*)malloc(sizeof(char)*2);
+    read(fd,buffer,sizeof(int8_t)*2);
+    this->local_depth=buffer[0];
+    this->fingerprint=buffer[1];
+    //bool
+    char* boolbit=(char*)malloc(sizeof(char));
+
+    int boolsize=sizeof(bitmap);
+    read(fd,boolbit,boolsize);
+    for(int i=0;i<boolsize;i++){
+        if(boolbit[i]=='1'){
+            this->bitmap[i]=true;
+        }else{
+            this->bitmap[i]=false;
+        }
+    }
+
+    // readBucket()
+    read(fd,array,sizeof(array));
+    printf("depth=%d\n",this->local_depth);
+    // printf("depth=%d",this->local_depth);
+
 }
