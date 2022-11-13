@@ -100,18 +100,19 @@ void hashtable::writeBucket(int fd){
     int size=this->getSizeTable();
     int offset=0;
     for(int i=0;i<size;i++){
-        offset+=table[i]->writeBucket(fd,BUCKET_SIZE*i);
-        printf("off=%d",offset);
+        table[i]->writeBucket(fd,BUCKET_SIZE*i);
     }
 }
+
 void hashtable::readBucket(int fd){
     //txt를 읽어서 Bucket을 생성
     lseek(fd,0,SEEK_SET);
     int size=this->getSizeTable();
     int offset=0;
     for(int i=0;i<size;i++){
+        printf("%d\n",i);
         Bucket* newbucket=new Bucket();
-        newbucket->readBucket(fd);
+        newbucket->readBucket(fd,BUCKET_SIZE*i);
         this->table[i]=newbucket;
     }
 }

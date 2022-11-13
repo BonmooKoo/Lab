@@ -208,20 +208,22 @@ int Bucket::writeBucket(int fd,int offset){
     int arrsize=sizeof(array);
     write(fd,array,arrsize);
 }
-void Bucket::readBucket(int fd){
+void Bucket::readBucket(int fd,int offset){
     // printf("depth=%d",this->local_depth);
     char* t="1";
     char* f="0";
     //파일 처음부터
-    // lseek(fd,offset,SEEK_SET);
-    char* buffer=(char*)malloc(sizeof(char)*2);
+    lseek(fd,offset,SEEK_SET);
+    char* buffer=(char*)malloc(sizeof(int8_t)*2);
     read(fd,buffer,sizeof(int8_t)*2);
     this->local_depth=buffer[0];
     this->fingerprint=buffer[1];
+    printf("depth=%d\n",buffer[0]);
+    printf("finger=%d\n",buffer[1]);
+    
     //bool
-    char* boolbit=(char*)malloc(sizeof(char));
-
     int boolsize=sizeof(bitmap);
+    char* boolbit=(char*)malloc(boolsize);
     read(fd,boolbit,boolsize);
     for(int i=0;i<boolsize;i++){
         if(boolbit[i]=='1'){
@@ -230,10 +232,10 @@ void Bucket::readBucket(int fd){
             this->bitmap[i]=false;
         }
     }
-
     // readBucket()
-    read(fd,array,sizeof(array));
-    printf("depth=%d\n",this->local_depth);
-    // printf("depth=%d",this->local_depth);
+    read(fd,array,sizeof(array));    
+    printf("endread\n");
 
+    checkBucket();
+    printf("endcheck\n");
 }

@@ -41,7 +41,7 @@ class Bucket
         Bucket* split(int index);
         void checkBucket();
         int getHashValue();
-        void readBucket(int fd);
+        void readBucket(int fd,int offset); 
         int writeBucket(int fd,int offset);
 };
 

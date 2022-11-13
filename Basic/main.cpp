@@ -8,7 +8,7 @@ int main() {
     clock_t start,end;
     hashtable ht(1);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 100;
+    int num = 200;
     char* filename="input2.txt";
     // int fd=open(filename,O_RDWR);
     int fd=open(filename,O_RDWR);
@@ -74,7 +74,9 @@ int main() {
     // cout<<"write"<<endl;
     ht.writeBucket(fd);
     ht.readBucket(fd);
-    cout<<"check"<<endl;
+    
+    printf("check\n");
+    
     ht.rtnBucket(0)->checkBucket();
     ht.rtnBucket(1)->checkBucket();
     
