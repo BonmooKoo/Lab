@@ -43,14 +43,14 @@ class Bucket
         int getHashValue();
         void readBucket(int fd,int offset); 
         int writeBucket(int fd,int offset);
+        void setFingerprint(int8_t fingerprint);
 };
 
 class hashtable{
     private:
         int8_t global_depth;
         Bucket** table;
-        char* buffer;
-
+        
     public:
         hashtable(int8_t size);
         int insertKV(char* key, char* value);

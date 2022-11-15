@@ -218,9 +218,6 @@ void Bucket::readBucket(int fd,int offset){
     read(fd,buffer,sizeof(int8_t)*2);
     this->local_depth=buffer[0];
     this->fingerprint=buffer[1];
-    printf("depth=%d\n",buffer[0]);
-    printf("finger=%d\n",buffer[1]);
-    
     //bool
     int boolsize=sizeof(bitmap);
     char* boolbit=(char*)malloc(boolsize);
@@ -237,5 +234,8 @@ void Bucket::readBucket(int fd,int offset){
     printf("endread\n");
 
     checkBucket();
-    printf("endcheck\n");
+}
+
+void Bucket::setFingerprint(int8_t fingerprint){
+    this->fingerprint=fingerprint;
 }
