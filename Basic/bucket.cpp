@@ -17,7 +17,6 @@ void Bucket::initialize()
     for (int i = 0; i < getSize(); i++)
     {
         bitmap[i] = false;
-
     }
 }
 int Bucket::getSize()
@@ -208,9 +207,8 @@ int Bucket::writeBucket(int fd,int offset){
     //full array
     int arrsize=sizeof(array);
     write(fd,array,arrsize);
-    write(fd,enter,2);
 }
-int8_t Bucket::readBucket(int fd,int offset,int index){
+void Bucket::readBucket(int fd,int offset){
     // printf("depth=%d",this->local_depth);
     char* t="1";
     char* f="0";
@@ -220,11 +218,6 @@ int8_t Bucket::readBucket(int fd,int offset,int index){
     read(fd,buffer,sizeof(int8_t)*2);
     this->local_depth=buffer[0];
     this->fingerprint=buffer[1];
-    printf("%d,%d,%d\n",local_depth,fingerprint,buffer[1]);
-    if(this->fingerprint!=index){
-        return this->fingerprint;
-    }
-
     //bool
     int boolsize=sizeof(bitmap);
     char* boolbit=(char*)malloc(boolsize);
@@ -237,7 +230,10 @@ int8_t Bucket::readBucket(int fd,int offset,int index){
         }
     }
     // readBucket()
-    read(fd,array,sizeof(array));
+    read(fd,array,sizeof(array));    
+    printf("endread\n");
+
+    checkBucket();
 }
 
 void Bucket::setFingerprint(int8_t fingerprint){

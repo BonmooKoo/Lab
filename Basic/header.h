@@ -41,7 +41,7 @@ class Bucket
         Bucket* split(int index);
         void checkBucket();
         int getHashValue();
-        int8_t readBucket(int fd,int offset,int index); 
+        void readBucket(int fd,int offset); 
         int writeBucket(int fd,int offset);
         void setFingerprint(int8_t fingerprint);
 };
