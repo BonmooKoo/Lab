@@ -4,7 +4,6 @@
 hashtable::hashtable(int8_t size) {
     //size=2^g  localdepth;
     global_depth = size;
-    
     table = new Bucket * [(int)pow(2, global_depth)];
     initialize();
 }
@@ -15,6 +14,7 @@ int hashtable::getSizeTable() {
 void hashtable::initialize() {
     for (int i = 0; i < (int)pow(2, global_depth); i++) {
         table[i] = new Bucket(global_depth);
+        table[i]->setFingerprint(i);
     }
 }
 int hashtable::hashingKey(char* key) {
@@ -51,6 +51,7 @@ int hashtable::insertKV(char* key, char* value) {
             //New Bucket 가르키는 index 변경
         for(int i=startPoint;i<size;i+=jumpScale){
             table[i]=newBucket;
+            table[i]->setFingerprint(i);
         }
         //다시 삽입
         index=hashingKey(key);
@@ -102,6 +103,7 @@ void hashtable::writeBucket(int fd){
     for(int i=0;i<size;i++){
         table[i]->writeBucket(fd,BUCKET_SIZE*i);
     }
+    
 }
 
 void hashtable::readBucket(int fd){
@@ -109,10 +111,19 @@ void hashtable::readBucket(int fd){
     lseek(fd,0,SEEK_SET);
     int size=this->getSizeTable();
     int offset=0;
+    int rtn=0;
     for(int i=0;i<size;i++){
         printf("%d\n",i);
         Bucket* newbucket=new Bucket();
-        newbucket->readBucket(fd,BUCKET_SIZE*i);
-        this->table[i]=newbucket;
+
+        if((rtn=newbucket->readBucket(fd,BUCKET_SIZE*i,i))==-1){
+            //중복 bucket을 가리키고 있음
+            cout<<"rtn="<<rtn<<"i="<<i<<endl;
+            this->table[i]=table[rtn];
+            free(newbucket);
+        }else{
+            this->table[i]=newbucket;
+        };
+        
     }
 }

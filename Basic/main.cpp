@@ -72,6 +72,11 @@ int main() {
 //RW
     hashtable ht2(2);
     ht2.readBucket(fd);
+    cout<<"1\\\\\\\\"<<endl;
+    ht2.rtnBucket(0)->checkBucket();
+    cout<<"2\\\\\\\\"<<endl;ht2.rtnBucket(1)->checkBucket();
+    cout<<"3\\\\\\\\"<<endl;ht2.rtnBucket(2)->checkBucket();
+    cout<<"4\\\\\\\\"<<endl;ht2.rtnBucket(3)->checkBucket();
     //탐색
     cout << "find" << endl;
     ifstream i2s("input.txt");
@@ -86,7 +91,7 @@ int main() {
             // printf("%d\n",i);
             Searchval=ht2.searchKV(key);
             if(Searchval==NULL){
-                printf("%d:null\n",i);
+                //printf("%d:null\n",i);
                 count++;
             }
             else {
@@ -95,6 +100,7 @@ int main() {
         }
         printf("null=%d\n",count);
     }
+    
     // i2s.close();
     // end=clock();
     // result=double(end-start)/CLOCKS_PER_SEC;
