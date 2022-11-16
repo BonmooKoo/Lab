@@ -10,7 +10,7 @@ int main() {
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
     int num = 200;
     char* filename="input2.txt";
-    // int fd=open(filename,O_RDWR);
+    // int fd=open(filename,O_RDWR|O_TRUNC);
     int fd=open(filename,O_RDWR);
     ifstream is("input.txt");
     start=clock();
@@ -23,7 +23,7 @@ int main() {
             ht.insertKV(key,key);  
         }
     }
-    
+    ht.writeBucket(fd);
     is.close();
     end=clock();
     double result=double(end-start);
@@ -70,16 +70,41 @@ int main() {
     // result=double(end-start)/CLOCKS_PER_SEC;
     // cout<<"search time="<<result<<"sec"<<endl;
 //RW
-    char* searchKey="49105041";
-    // cout<<"write"<<endl;
-    ht.writeBucket(fd);
-    ht.readBucket(fd);
+    hashtable ht2(2);
+    ht2.readBucket(fd);
+    cout<<"1\\\\\\\\"<<endl;
+    ht2.rtnBucket(0)->checkBucket();
+    cout<<"2\\\\\\\\"<<endl;ht2.rtnBucket(1)->checkBucket();
+    cout<<"3\\\\\\\\"<<endl;ht2.rtnBucket(2)->checkBucket();
+    cout<<"4\\\\\\\\"<<endl;ht2.rtnBucket(3)->checkBucket();
+    //탐색
+    cout << "find" << endl;
+    ifstream i2s("input.txt");
+    int count=0;
+    start=clock();
+    if (i2s.is_open()) {
+        for (int i = 0; i < num; i++) {
+            string input;
+            getline(i2s, input);
+            key = (char*)input.c_str();
+            char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
+            // printf("%d\n",i);
+            Searchval=ht2.searchKV(key);
+            if(Searchval==NULL){
+                //printf("%d:null\n",i);
+                count++;
+            }
+            else {
+                //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
+            }
+        }
+        printf("null=%d\n",count);
+    }
     
-    printf("check\n");
+    // i2s.close();
+    // end=clock();
+    // result=double(end-start)/CLOCKS_PER_SEC;
+    // cout<<"search time="<<result<<"sec"<<endl;
     
-    ht.rtnBucket(0)->checkBucket();
-    ht.rtnBucket(1)->checkBucket();
     
-    printf("val=%s\n",ht.searchKV(searchKey)); 
-
 }
