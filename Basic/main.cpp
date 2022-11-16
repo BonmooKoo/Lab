@@ -4,6 +4,7 @@
 #include <time.h>
 #pragma warning(disable:4996)
 
+//g++ -o hash hashtable.cpp bucket.cpp main.cpp
 int main() {
     clock_t start,end;
     hashtable ht(1);

@@ -23,8 +23,8 @@ class Bucket
 {
     private:
         //64
+        int8_t pagenumber;
         int8_t local_depth;//1
-        int8_t fingerprint;
         bool bitmap[BUCKET_SIZE/(KEY_SIZE+VALUE_SIZE)-2];
         char array[BUCKET_SIZE-sizeof(int8_t)-sizeof(int8_t)-sizeof(bitmap)];
     public:
@@ -43,7 +43,7 @@ class Bucket
         int getHashValue();
         int8_t readBucket(int fd,int offset,int index); 
         int writeBucket(int fd,int offset);
-        void setFingerprint(int8_t fingerprint);
+        void setpagenumber(int8_t pagenumber);
 };
 
 class hashtable{

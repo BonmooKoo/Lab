@@ -4,12 +4,12 @@
 Bucket::Bucket()
 {
     initialize();
-    fingerprint=9;
+    pagenumber=-1;
     local_depth = 1;
 }
 Bucket::Bucket(int8_t depth){
     initialize();
-    fingerprint=9;
+    pagenumber=-1;
     local_depth = depth;
 }
 void Bucket::initialize()
@@ -185,61 +185,16 @@ int Bucket::getHashValue(){
 }
 
 int Bucket::writeBucket(int fd,int offset){
-    int size=getSize();
-    char* enter="\n";
-    char* t="1";
-    char* f="0";
+    
     lseek(fd,offset,SEEK_SET);
-    //int8_t local depth , fingerprint
-    write(fd,this,sizeof(int8_t)*2);
-
-    //bitmap
-    int boolsize=sizeof(bitmap);
-    char bitmapbuffer[boolsize];
-    for(int i=0;i<boolsize;i++){
-        if(this->bitmap[i]){
-            write(fd,t,1);
-        }
-        else{
-            write(fd,f,1);
-        }
-    }
-
-    //full array
-    int arrsize=sizeof(array);
-    write(fd,array,arrsize);
-    write(fd,enter,2);
+    write(fd,this,BUCKET_SIZE);
 }
 int8_t Bucket::readBucket(int fd,int offset,int index){
-    // printf("depth=%d",this->local_depth);
-    char* t="1";
-    char* f="0";
-    //파일 처음부터
+    
     lseek(fd,offset,SEEK_SET);
-    char* buffer=(char*)malloc(sizeof(int8_t)*2);
-    read(fd,buffer,sizeof(int8_t)*2);
-    this->local_depth=buffer[0];
-    this->fingerprint=buffer[1];
-    printf("%d,%d,%d\n",local_depth,fingerprint,buffer[1]);
-    if(this->fingerprint!=index){
-        return this->fingerprint;
-    }
-
-    //bool
-    int boolsize=sizeof(bitmap);
-    char* boolbit=(char*)malloc(boolsize);
-    read(fd,boolbit,boolsize);
-    for(int i=0;i<boolsize;i++){
-        if(boolbit[i]=='1'){
-            this->bitmap[i]=true;
-        }else{
-            this->bitmap[i]=false;
-        }
-    }
-    // readBucket()
-    read(fd,array,sizeof(array));
+    read(fd,this,BUCKET_SIZE);
 }
 
-void Bucket::setFingerprint(int8_t fingerprint){
-    this->fingerprint=fingerprint;
+void Bucket::setpagenumber(int8_t pagenumber){
+    this->pagenumber=pagenumber;
 }
