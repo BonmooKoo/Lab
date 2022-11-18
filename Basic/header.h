@@ -44,6 +44,7 @@ class Bucket
         int8_t readBucket(int fd,int offset,int index); 
         int writeBucket(int fd,int offset);
         void setpagenumber(int8_t pagenumber);
+        int8_t getpagenumber();
 };
 
 class hashtable{

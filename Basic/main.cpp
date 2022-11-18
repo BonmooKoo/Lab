@@ -73,34 +73,34 @@ int main() {
 //RW
     hashtable ht2(2);
     ht2.readBucket(fd);
-    cout<<"1\\\\\\\\"<<endl;
-    ht2.rtnBucket(0)->checkBucket();
-    cout<<"2\\\\\\\\"<<endl;ht2.rtnBucket(1)->checkBucket();
-    cout<<"3\\\\\\\\"<<endl;ht2.rtnBucket(2)->checkBucket();
-    cout<<"4\\\\\\\\"<<endl;ht2.rtnBucket(3)->checkBucket();
-    //탐색
-    cout << "find" << endl;
-    ifstream i2s("input.txt");
-    int count=0;
-    start=clock();
-    if (i2s.is_open()) {
-        for (int i = 0; i < num; i++) {
-            string input;
-            getline(i2s, input);
-            key = (char*)input.c_str();
-            char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
-            // printf("%d\n",i);
-            Searchval=ht2.searchKV(key);
-            if(Searchval==NULL){
-                //printf("%d:null\n",i);
-                count++;
-            }
-            else {
-                //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
-            }
-        }
-        printf("null=%d\n",count);
-    }
+    // cout<<"1\\\\\\\\"<<endl;
+    // ht2.rtnBucket(0)->checkBucket();
+    // cout<<"2\\\\\\\\"<<endl;ht2.rtnBucket(1)->checkBucket();
+    // cout<<"3\\\\\\\\"<<endl;ht2.rtnBucket(2)->checkBucket();
+    // cout<<"4\\\\\\\\"<<endl;ht2.rtnBucket(3)->checkBucket();
+    // //탐색
+    // cout << "find" << endl;
+    // ifstream i2s("input.txt");
+    // int count=0;
+    // start=clock();
+    // if (i2s.is_open()) {
+    //     for (int i = 0; i < num; i++) {
+    //         string input;
+    //         getline(i2s, input);
+    //         key = (char*)input.c_str();
+    //         char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
+    //         // printf("%d\n",i);
+    //         Searchval=ht2.searchKV(key);
+    //         if(Searchval==NULL){
+    //             //printf("%d:null\n",i);
+    //             count++;
+    //         }
+    //         else {
+    //             //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
+    //         }
+    //     }
+    //     printf("null=%d\n",count);
+    // }
     
     // i2s.close();
     // end=clock();

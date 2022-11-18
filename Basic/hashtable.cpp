@@ -100,8 +100,16 @@ void hashtable::update(char* key,char* value){
 void hashtable::writeBucket(int fd){
     int size=this->getSizeTable();
     int offset=0;
-    for(int i=0;i<size;i++){
-        table[i]->writeBucket(fd,BUCKET_SIZE*i);
+    for(int i=0;i<size/4;i++){
+        for(int j=0;j<4;j++){
+            if(table[i]->getpagenumber()==i){
+            write(fd,table[i],BUCKET_SIZE);
+        }
+        }
+        //bucket의 pagenumber != table index
+        //
+        
+        
     }
     
 }
@@ -109,21 +117,30 @@ void hashtable::writeBucket(int fd){
 void hashtable::readBucket(int fd){
     //txt를 읽어서 Bucket을 생성
     lseek(fd,0,SEEK_SET);
+    
     int size=this->getSizeTable();
     int offset=0;
     int rtn=0;
-    for(int i=0;i<size;i++){
-        Bucket* newbucket=new Bucket();
-        newbucket->readBucket(fd,BUCKET_SIZE*i,i);
-        this->table[i]=newbucket;
-        // if((rtn=newbucket->r eadBucket(fd,BUCKET_SIZE*i,i))==-1){
-        //     //중복 bucket을 가리키고 있음
-        //     cout<<"rtn="<<rtn<<"i="<<i<<endl;
-        //     this->table[i]=table[rtn];
-        //     free(newbucket);
-        // }else{
-        //     this->table[i]=newbucket;
-        // };
+    char* buffer=(char*)malloc(4096);
+    for(int i=0;i<size/4;i++){
+        read(fd,buffer,4096);    
+        for(int j=0;j<4;j++){
+            //Bucket 읽기
+            Bucket* newbucket=new Bucket();
+            memcpy(newbucket,buffer+(BUCKET_SIZE*i),BUCKET_SIZE);
+            
+            //pagenum 읽어서 해당 index에 넣어줌
+            int8_t pagenum=buffer[BUCKET_SIZE*i];
+            table[pagenum]=newbucket;
+            int8_t localdepth=buffer[BUCKET_SIZE*i+1];
+            if(localdepth!=this->global_depth){
+                int8_t time=(int8_t)pow(2,global_depth-localdepth);
+                int8_t gap=size/time;
+                for(int k=0;k<time;k++){
+                    table[pagenum+gap*k]=newbucket;
+                }
+            }
+        }
         
     }
 }

@@ -198,3 +198,6 @@ int8_t Bucket::readBucket(int fd,int offset,int index){
 void Bucket::setpagenumber(int8_t pagenumber){
     this->pagenumber=pagenumber;
 }
+int8_t Bucket::getpagenumber(){
+    return this->pagenumber;
+};
