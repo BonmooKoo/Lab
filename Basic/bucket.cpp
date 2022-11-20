@@ -157,8 +157,9 @@ void Bucket::checkBucket(){
     int size = getSize();
     char *key = (char *)calloc(KEY_SIZE, sizeof(char));
     char *value = (char *)calloc(KEY_SIZE, sizeof(char));
-    
-    for (int i = 0; i < size; i++) {
+    printf("localdepth=%d\n",this->local_depth);
+    printf("pagenum=%d\n",this->pagenumber);
+    for (int i = 0; i < 2; i++) {
         strncpy(key, array + i * (KEY_SIZE + VALUE_SIZE), KEY_SIZE);
         strncpy(value, array + i * (KEY_SIZE + VALUE_SIZE)+KEY_SIZE, VALUE_SIZE);
         
@@ -188,7 +189,7 @@ int Bucket::writeBucket(int fd,int offset){
     
     lseek(fd,offset,SEEK_SET);
     write(fd,this,BUCKET_SIZE);
-}
+} 
 int8_t Bucket::readBucket(int fd,int offset,int index){
     
     lseek(fd,offset,SEEK_SET);

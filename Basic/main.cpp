@@ -9,10 +9,10 @@ int main() {
     clock_t start,end;
     hashtable ht(1);
     char* key = (char*)calloc(KEY_SIZE+1, sizeof(char));
-    int num = 200;
+    int num =1000;
     char* filename="input2.txt";
     // int fd=open(filename,O_RDWR|O_TRUNC);
-    int fd=open(filename,O_RDWR);
+    int fd=open(filename,O_RDWR|O_TRUNC);
     ifstream is("input.txt");
     start=clock();
     if (is.is_open()) {
@@ -28,7 +28,12 @@ int main() {
     is.close();
     end=clock();
     double result=double(end-start);
+    printf("write\n");
     cout<<"input time="<<result/CLOCKS_PER_SEC<<"sec"<<endl;
+    cout<<"0\\\\\\\\"<<endl;ht.rtnBucket(0)->checkBucket();
+    cout<<"1\\\\\\\\"<<endl;ht.rtnBucket(1)->checkBucket();
+    cout<<"2\\\\\\\\"<<endl;ht.rtnBucket(2)->checkBucket();
+    cout<<"3\\\\\\\\"<<endl;ht.rtnBucket(3)->checkBucket();
     // ht.rtnBucket(0)->checkBucket();
 //업데이트
     // char* updateval=(char*)malloc(sizeof(char)*VALUE_SIZE);
@@ -44,68 +49,70 @@ int main() {
     // printf("%s\n",ht.searchKV(key));
 
 //탐색
-    // cout << "find" << endl;
-    // ifstream i2s("input.txt");
-    // int count=0;
-    // start=clock();
-    // if (i2s.is_open()) {
-    //     for (int i = 0; i < num; i++) {
-    //         string input;
-    //         getline(i2s, input);
-    //         key = (char*)input.c_str();
-    //         char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
-    //         // printf("%d\n",i);
-    //         Searchval=ht.searchKV(key);
-    //         if(Searchval==NULL){
-    //             printf("%d:null\n",i);
-    //             count++;
-    //         }
-    //         else {
-    //             //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
-    //         }
-    //     }
-    //     printf("null=%d\n",count);
-    // }
-    // i2s.close();
-    // end=clock();
-    // result=double(end-start)/CLOCKS_PER_SEC;
-    // cout<<"search time="<<result<<"sec"<<endl;
+    cout << "find" << endl;
+    ifstream i2s("input.txt");
+    int count=0;
+    start=clock();
+    if (i2s.is_open()) {
+        for (int i = 0; i < num; i++) {
+            string input;
+            getline(i2s, input);
+            key = (char*)input.c_str();
+            char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
+            // printf("%d\n",i);
+            Searchval=ht.searchKV(key);
+            if(Searchval==NULL){
+                printf("%d:null\n",i);
+                count++;
+            }
+            else {
+                //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
+            }
+        }
+        printf("null=%d\n",count);
+    }
+    i2s.close();
+    end=clock();
+    result=double(end-start)/CLOCKS_PER_SEC;
+    cout<<"search time="<<result<<"sec"<<endl;
 //RW
-    hashtable ht2(2);
+    hashtable ht2(1);
     ht2.readBucket(fd);
-    // cout<<"1\\\\\\\\"<<endl;
-    // ht2.rtnBucket(0)->checkBucket();
-    // cout<<"2\\\\\\\\"<<endl;ht2.rtnBucket(1)->checkBucket();
-    // cout<<"3\\\\\\\\"<<endl;ht2.rtnBucket(2)->checkBucket();
-    // cout<<"4\\\\\\\\"<<endl;ht2.rtnBucket(3)->checkBucket();
-    // //탐색
-    // cout << "find" << endl;
-    // ifstream i2s("input.txt");
-    // int count=0;
-    // start=clock();
-    // if (i2s.is_open()) {
-    //     for (int i = 0; i < num; i++) {
-    //         string input;
-    //         getline(i2s, input);
-    //         key = (char*)input.c_str();
-    //         char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
-    //         // printf("%d\n",i);
-    //         Searchval=ht2.searchKV(key);
-    //         if(Searchval==NULL){
-    //             //printf("%d:null\n",i);
-    //             count++;
-    //         }
-    //         else {
-    //             //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
-    //         }
-    //     }
-    //     printf("null=%d\n",count);
-    // }
+    printf("-------------find=====================\n");
+    cout<<"0\\\\\\\\"<<endl;ht2.rtnBucket(0)->checkBucket();
+    cout<<"1\\\\\\\\"<<endl;ht2.rtnBucket(1)->checkBucket();
+    cout<<"2\\\\\\\\"<<endl;ht2.rtnBucket(2)->checkBucket();
+    cout<<"3\\\\\\\\"<<endl;ht2.rtnBucket(3)->checkBucket();
+    
+    
+    ifstream i3s("input.txt");
+    int count1=0;
+    start=clock();
+    if (i3s.is_open()) {
+        for (int i = 0; i < num; i++) {
+            string input;
+            getline(i3s, input);
+            key = (char*)input.c_str();
+            char* Searchval=(char*)calloc(VALUE_SIZE,sizeof(char));
+            // printf("%d\n",i);
+            Searchval=ht2.searchKV(key);
+            if(Searchval==NULL){
+                //printf("%d:null\n",i);
+                count1++;
+            }
+            else {
+                //printf("%d:key=%s\nval=%s\n",i,key,Searchval);  
+            }
+        }
+        printf("null=%d\n,%d",count1,ht2.getSizeTable());
+    }
     
     // i2s.close();
     // end=clock();
     // result=double(end-start)/CLOCKS_PER_SEC;
     // cout<<"search time="<<result<<"sec"<<endl;
+
+
     
     
-}
+} 
